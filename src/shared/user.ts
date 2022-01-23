@@ -1,4 +1,4 @@
-import { IUserFull } from '~entities';
+import { IAuthUser, IUserFull } from '~entities';
 
 export enum UserRole {
   // eslint-disable-next-line no-unused-vars
@@ -26,6 +26,6 @@ export function getUserRoleName(roleId: UserRole): string {
   }
 }
 
-export const userHasRole = (user: IUserFull, roleId: UserRole): boolean => {
+export const userHasRole = (user: IUserFull | IAuthUser, roleId: UserRole): boolean => {
   return user.roles.indexOf(roleId) > -1;
 };

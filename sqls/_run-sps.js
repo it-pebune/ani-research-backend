@@ -64,19 +64,23 @@ if (false) {
 
 const previouslyModifiedFiles = [
   // 'sqls/changes.sql',
+  'sqls/subjects/getSubjectById.sql',
+  'sqls/subjects/subjectList.sql',
+  'sqls/subjects/subjectAdd.sql',
+  'sqls/subjects/subjectUpdate.sql'
   // 'sqls/login/didLogin.sql',
   // 'sqls/login/didLogout.sql',
-  'sqls/users/deserializeUser.sql',
-  'sqls/users/getUserByEmail.sql',
-  'sqls/users/getUserByGoogleId.sql',
-  'sqls/users/getUserById.sql',
-  'sqls/users/getUserByRefreshToken.sql',
-  'sqls/users/adminUserAdd.sql',
-  'sqls/users/adminUserDelete.sql',
-  'sqls/users/adminUserList.sql',
-  'sqls/users/adminUserUpdate.sql',
-  'sqls/users/adminUserUpdateStatus.sql',
-  'sqls/users/userUpdate.sql'
+  // 'sqls/users/deserializeUser.sql',
+  // 'sqls/users/getUserByEmail.sql',
+  // 'sqls/users/getUserByGoogleId.sql',
+  // 'sqls/users/getUserById.sql',
+  // 'sqls/users/getUserByRefreshToken.sql',
+  // 'sqls/users/adminUserAdd.sql',
+  // 'sqls/users/adminUserDelete.sql',
+  // 'sqls/users/adminUserList.sql',
+  // 'sqls/users/adminUserUpdate.sql',
+  // 'sqls/users/adminUserUpdateStatus.sql',
+  // 'sqls/users/userUpdate.sql'
 ];
 
 /**

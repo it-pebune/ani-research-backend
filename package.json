@@ -1,6 +1,6 @@
 {
   "name": "main-apis",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .ts .",
@@ -82,7 +82,7 @@
   },
   "apidoc": {
     "name": "ANI / BUNE - Research REST API",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "url": "https://api-research.azurewebsites.net"
   }
 }

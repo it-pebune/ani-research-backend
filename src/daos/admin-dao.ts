@@ -30,9 +30,8 @@ export class AdminDao {
         .input('provider', sqlVarChar(50), user.provider)
         .input('providerData', sqlVarChar(MAX), JSON.stringify(user.providerData))
         .input('googleId', sqlVarChar(50), user.googleId)
-        .input('profileImageUrl', sqlVarChar(512), user.profileImageUrl);
-
-      sqlReq.output('userId', TYPES.Int);
+        .input('profileImageUrl', sqlVarChar(512), user.profileImageUrl)
+        .output('userId', TYPES.Int);
 
       const result = await sqlReq.execute('adminUserAdd');
       return result;
