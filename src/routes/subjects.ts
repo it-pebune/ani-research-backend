@@ -23,6 +23,10 @@ router.route('/:subjectId/notes')
   .all(subjectPolicy.isAllowed.bind(subjectPolicy))
   .put(ctrl.updateNotes.bind(ctrl));
 
+router.route('/:subjectId/assign')
+  .all(subjectPolicy.isAllowed.bind(subjectPolicy))
+  .put(ctrl.assign.bind(ctrl));
+
 router.route('/:subjectId/assignedHistory')
   .all(subjectPolicy.isAllowed.bind(subjectPolicy))
   .get(ctrl.assignedHistory.bind(ctrl));

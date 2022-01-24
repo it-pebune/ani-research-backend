@@ -12,6 +12,7 @@ import {
 import app from '~app';
 import { SubjectDao } from '~daos';
 import Joi from 'joi';
+import { SubjectStatus } from 'src/entities/subject';
 
 
 interface ISubjectDTO {
@@ -24,6 +25,11 @@ interface ISubjectDTO {
 
 interface ISubjectUpdateNotesDTO {
   notes: string;
+}
+
+interface ISubjectAssignDTO {
+  userId: number;
+  status: SubjectStatus;
 }
 
 /** Subject management controller */
@@ -318,6 +324,79 @@ export class SubjectController {
       await dao.delete(subject.id);
 
       res.status(StatusCodes.OK).json(subject);
+    } catch (ex) {
+      logger.error(parseError(ex));
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ErrorResponse(ApiError.internal_error));
+    }
+  }
+
+  /**
+   * @api {put} /api/subjects/:subjectId/assign Assign the specified subject to a user
+   * @apiName SubjectAssign
+   * @apiGroup Subject Management
+   * @apiVersion 0.3.0
+   * @apiPermission coordinator
+   * @apiDescription Assign the specified subject to a user.
+   * Note: The previous subject assignment, if any, will be revoked
+   *
+   * @apiParam {Number} userId The user the subject is assigned to
+   * @apiParam {SubjectStatus} status The status the subject is in
+   *
+   * @apiErrorExample Error-Response:
+   * HTTP 1/1 406
+   * {
+   *  code: VALIDATION_ERROR,
+   *  message: 'Input validation failed',
+   *  details: validation error array
+   * }
+   *
+   * @apiUse UnknownError
+   *
+   */
+  /**
+   * @param {Request} req
+   * @param {Response} res
+   * @return {Promise<void>}
+   */
+  public async assign(req: Request, res: Response) {
+    try {
+      const loggedUser = getRequestUser(req);
+      if (!loggedUser) {
+        res.status(StatusCodes.UNAUTHORIZED).send();
+        return;
+      }
+
+      const subject = getRequestSubject(req);
+      if (!subject) {
+        res.status(StatusCodes.UNAUTHORIZED).send();
+        return;
+      }
+
+      const requestSchema = Joi.object<ISubjectAssignDTO>({
+        userId: Joi.number().required(),
+        status: Joi.number().required()
+      });
+      const { value: params, error: verror } = requestSchema.validate(req.body);
+      if (verror || !params) {
+        logger.debug(verror?.details);
+        res.status(StatusCodes.BAD_REQUEST).json(
+          new ErrorResponse(ApiError.validation_error.withDetails(verror?.details))
+        );
+        return;
+      }
+
+      const subj = {
+        id: subject.id,
+        userId: params.userId,
+        assignedBy: loggedUser.id,
+        status: params.status
+      };
+
+      const sqlpool = await app.sqlPool;
+      const dao = new SubjectDao(sqlpool);
+      await dao.assign(subj);
+
+      res.status(StatusCodes.OK).json({});
     } catch (ex) {
       logger.error(parseError(ex));
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ErrorResponse(ApiError.internal_error));

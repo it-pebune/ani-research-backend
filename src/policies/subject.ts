@@ -29,6 +29,9 @@ class SubjectPolicy implements IPolicy {
         resources: '/:subjectId',
         permissions: '*'
       }, {
+        resources: '/:subjectId/assign',
+        permissions: '*'
+      }, {
         resources: '/:subjectId/assignedHistory',
         permissions: '*'
       }]

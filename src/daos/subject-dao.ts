@@ -1,5 +1,5 @@
 import { ConnectionPool, IProcedureResult, MAX, Request as SqlRequest, TYPES } from 'mssql';
-import { ISubject, ISubjectAssignedHistory } from 'src/entities/subject';
+import { ISubject, ISubjectAssignedHistory, SubjectStatus } from 'src/entities/subject';
 import { sqlNVarChar, sqlVarChar } from '~shared';
 
 
@@ -10,6 +10,13 @@ interface ISubjectDTO {
   lastName: string;
   dob: Date;
   sirutaId: number;
+}
+
+interface ISubjectAssignDTO {
+  id: number;
+  userId: number;
+  assignedBy: number;
+  status: SubjectStatus;
 }
 
 /**
@@ -146,6 +153,25 @@ export class SubjectDao {
         .input('id', TYPES.Int, id)
         .execute('getSubjectAssignedHistory');
       return result.recordset;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Assign subject to user
+   * @param {ISubjectAssignDTO} params
+   * @return {Promise<IProcedureResult<any>>}
+   */
+  public async assign(params: ISubjectAssignDTO) : Promise<IProcedureResult<any>> {
+    try {
+      const result = await new SqlRequest(this.sql)
+        .input('id', TYPES.Int, params.id)
+        .input('userId', TYPES.Int, params.userId)
+        .input('assignedBy', TYPES.Int, params.assignedBy)
+        .input('status', TYPES.TinyInt, params.status)
+        .execute('subjectAssign');
+      return result;
     } catch (error) {
       throw error;
     }
