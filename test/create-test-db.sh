@@ -1,0 +1,1 @@
+sqlcmd -S localhost -U sa -P Pass123! -i sqls/db/create-test-db.sql
