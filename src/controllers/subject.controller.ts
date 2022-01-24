@@ -26,7 +26,7 @@ interface ISubjectUpdateNotesDTO {
   notes: string;
 }
 
-/** User management controller */
+/** Subject management controller */
 export class SubjectController {
   /**
    * @api {get} /api/subjects/:subjectId Get details for the specified subject
