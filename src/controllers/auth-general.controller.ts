@@ -125,7 +125,7 @@ export class GeneralAuthController {
         access: jwtBearerToken,
         refresh: req.body.token,
         accessExpiresIn: 2 * 60 * 60,
-        refreshExpiresIn: 0
+        refreshExpiresIn: 24 * 60 * 60
       };
 
       res.status(StatusCodes.OK).json(token);
