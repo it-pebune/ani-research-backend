@@ -1,5 +1,5 @@
 import { ConnectionPool, IProcedureResult, MAX, Request as SqlRequest, TYPES } from 'mssql';
-import { IProviderData, IUser, IUserFull, UserStatus } from '~entities';
+import { IGoogleData, IProviderData, IUser, IUserFull, UserStatus } from '~entities';
 import { sqlNVarChar, sqlVarChar } from '~shared';
 
 
@@ -26,7 +26,7 @@ export class AdminDao {
         .input('firstName', sqlNVarChar(100), user.firstName)
         .input('lastName', sqlNVarChar(100), user.lastName)
         .input('displayName', sqlNVarChar(200), user.displayName)
-        .input('email', sqlVarChar(100), user.email)
+        .input('email', sqlVarChar(50), user.email)
         .input('provider', sqlVarChar(50), user.provider)
         .input('providerData', sqlVarChar(MAX), JSON.stringify(user.providerData))
         .input('googleId', sqlVarChar(50), user.googleId)
@@ -57,6 +57,25 @@ export class AdminDao {
         .input('roles', sqlVarChar(50), user.roles.join());
 
       const result = await sqlReq.execute('adminUserUpdate');
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   *
+   * @param {IUserFull} user
+   */
+  public async updateProviderData(user: IUserFull): Promise<IProcedureResult<any>> {
+    try {
+      const sqlReq = new SqlRequest(this.sql)
+        .input('id', TYPES.Int, user.id)
+        .input('email', sqlVarChar(50), user.email)
+        .input('providerData', sqlVarChar(MAX), JSON.stringify(user.providerData))
+        .input('profileImageUrl', sqlVarChar(512), user.profileImageUrl);
+
+      const result = await sqlReq.execute('userUpdateProviderData');
       return result;
     } catch (error) {
       throw error;
@@ -141,7 +160,7 @@ export interface IUserAddDTO {
   displayName: string;
   email: string;
   provider: string;
-  providerData: IProviderData;
+  providerData: IProviderData | IGoogleData;
   profileImageUrl: string;
   googleId: string;
   status: UserStatus;

@@ -16,6 +16,16 @@ export interface IProviderData {
   [key: string]: number | string | Date | object | null;
 }
 
+export interface IGoogleData {
+  id?: string;
+  email?: string;
+  verifiedEmail?: boolean;
+  displayName?: string;
+  givenName?: string;
+  familyName?: string;
+  picture?: string;
+}
+
 export interface IUserFull {
   id: number;
   firstName: string;
@@ -25,7 +35,7 @@ export interface IUserFull {
   phone: string;
   roles: UserRole[];
   provider: string;
-  providerData: IProviderData;
+  providerData: IProviderData | IGoogleData;
   profileImageUrl: string;
   googleId: string;
   socialInfo?: string;
