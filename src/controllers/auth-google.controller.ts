@@ -1,13 +1,13 @@
 import { randomBytes } from 'crypto';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { google, Auth } from 'googleapis';
+import { OAuth2Client } from 'google-auth-library';
 import Joi from 'joi';
 import { v4 as uuidv4 } from 'uuid';
 import * as jwt from 'jsonwebtoken';
 import {
   ErrorResponse, ApiError, IGoogleClientInfo,
-  IProviderData, IAuthToken, IAuthResponse, UserStatus
+  IProviderData, IAuthToken, IAuthResponse, UserStatus, IGoogleData
 } from '~entities';
 import {
   appConfig,
@@ -16,9 +16,9 @@ import {
 import app from '~app';
 import { AdminDao, AuthDao, UserDao } from '~daos';
 
+
 /**
  * Google Authentication Controller
- * http://localhost:3300/api/auth/google/callback
  */
 export class GoogleAuthController {
   /**
@@ -97,7 +97,7 @@ export class GoogleAuthController {
         res.status(StatusCodes.BAD_REQUEST).json(new ErrorResponse(ApiError.invalid_redirect_uri));
         return;
       }
-      const oauth2Client: Auth.OAuth2Client = new google.auth.OAuth2(
+      const oauth2Client = new OAuth2Client(
         keys.client_id,
         keys.client_secret,
         query.redirect_uri
@@ -106,23 +106,22 @@ export class GoogleAuthController {
       const { tokens } = await oauth2Client.getToken(query.code);
       // logger.debug(tokens);
       oauth2Client.setCredentials(tokens);
-      google.options({ auth: oauth2Client });
-      const oauth2 = google.oauth2('v2');
-      const userInfoResponse = await oauth2.userinfo.get({});
-      const userInfo = userInfoResponse.data;
+      const url = 'https://people.googleapis.com/v1/people/me?personFields=emailAddresses,names,photos';
+      const userInfoResponse = await oauth2Client.request({ url });
+      const userInfo = this.parseMeInfo(userInfoResponse.data);
       logger.debug(userInfo);
-      if (userInfo.id && userInfo.email && userInfo.name) {
+      if (userInfo.id && userInfo.email && userInfo.displayName) {
         const sqlpool = await app.sqlPool;
         const userDao = new UserDao(sqlpool);
         let userExists = await userDao.getByGoogleId(userInfo.id);
         if (!userExists) {
           const userAdd = {
-            firstName: userInfo.given_name || userInfo.name,
-            lastName: userInfo.family_name || userInfo.name,
-            displayName: userInfo.name,
+            firstName: userInfo.givenName || userInfo.displayName,
+            lastName: userInfo.familyName || userInfo.displayName,
+            displayName: userInfo.displayName,
             email: userInfo.email,
             provider: 'google',
-            providerData: userInfo as IProviderData,
+            providerData: userInfo,
             profileImageUrl: userInfo.picture || '',
             googleId: userInfo.id,
             status: UserStatus.pending
@@ -145,6 +144,19 @@ export class GoogleAuthController {
         } else if (userExists.status === UserStatus.blackListed) {
           res.status(StatusCodes.NOT_ACCEPTABLE).json(new ErrorResponse(ApiError.account_blacklisted));
           return;
+        } else {
+          if (
+            userExists.email !== userInfo.email ||
+            userExists.profileImageUrl !== userInfo.picture
+          ) {
+            logger.debug('update provider data...');
+            userExists.email = userInfo.email;
+            userExists.profileImageUrl = userInfo.picture || '';
+            userExists.providerData = userInfo as IProviderData;
+            const adminDao = new AdminDao(sqlpool);
+            const result = await adminDao.updateProviderData(userExists);
+            logger.debug(result);
+          }
         }
 
         logger.debug(userExists);
@@ -255,7 +267,7 @@ export class GoogleAuthController {
         'https://www.googleapis.com/auth/userinfo.profile'
       ];
 
-      const oauth2Client: Auth.OAuth2Client = new google.auth.OAuth2(
+      const oauth2Client = new OAuth2Client(
         keys.client_id,
         keys.client_secret,
         query.redirect_uri
@@ -284,4 +296,61 @@ export class GoogleAuthController {
     const json = JSON.parse(process.env.GOOGLE_CLIENT_INFO);
     return json.web;
   }
+
+  /**
+   * Parse the returned info from people.googleapis.com/v1/people/me
+   * @param {any} info
+   * @return {IGoogleData}
+   */
+  private parseMeInfo(info: any): IGoogleData {
+    const me: IGoogleData = {};
+
+    if (info.names && info.names.length) {
+      const names = info.names[0];
+      me.id = names.metadata.source.id;
+      me.displayName = names.displayName;
+      me.familyName = names.familyName;
+      me.givenName = names.givenName;
+    }
+    if (info.emailAddresses && info.emailAddresses.length) {
+      info.emailAddresses.forEach((ea: IPeopleEmailAddress) => {
+        if (!!ea.metadata.primary) {
+          me.email = ea.value;
+          me.verifiedEmail = !!ea.metadata.verified;
+        }
+      });
+    }
+    if (info.photos && info.photos.length) {
+      info.photos.forEach((p: IPeoplePhoto) => {
+        if (!!p.metadata.primary) {
+          me.picture = p.url;
+        }
+      });
+    }
+
+    return me;
+  }
+}
+
+
+interface IPeopleEmailAddress {
+  metadata: {
+    primary?: boolean;
+    verified?: boolean;
+    source: IPeopleMetaSource;
+  }
+  value: string;
+}
+
+interface IPeoplePhoto {
+  metadata: {
+    primary?: boolean;
+    source: IPeopleMetaSource;
+  }
+  url: string;
+}
+
+interface IPeopleMetaSource {
+  id: string;
+  type: string;
 }
