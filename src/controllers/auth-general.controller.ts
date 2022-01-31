@@ -88,7 +88,7 @@ export class GeneralAuthController {
    */
   public async refreshAuthToken(req: Request, res: Response): Promise<void> {
     logger.debug('::refreshAuthToken');
-    const body = req.body || {};
+    const body = req.query as { token: string };
     try {
       const sqlpool = await app.sqlPool;
       const authDao = new AuthDao(sqlpool);

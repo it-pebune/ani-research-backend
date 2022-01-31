@@ -66,6 +66,7 @@ class App {
   private initJWT() {
     const exceptedPaths = [
       '/vinfo',
+      '/api/auth/refresh',
       '/api/auth/google/auth-url',
       '/api/auth/google/signin'
     ];
