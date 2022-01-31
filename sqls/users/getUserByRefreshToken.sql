@@ -7,8 +7,8 @@ END
 GO
 
 CREATE PROCEDURE [dbo].getUserByRefreshToken(
-  @refreshToken			nvarchar(64),
-  @refreshTokenExpires	datetime2
+  @refreshToken			    VARCHAR(64),
+  @refreshTokenExpires	DATETIME2
 )
 AS
 BEGIN

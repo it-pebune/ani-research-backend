@@ -16,6 +16,6 @@ router.route('/signout')
   .get(authCtrl.signout.bind(authCtrl));
 
 router.route('/refresh')
-  .post(authCtrl.refreshAuthToken.bind(authCtrl));
+  .get(authCtrl.refreshAuthToken.bind(authCtrl));
 
 export default router;
