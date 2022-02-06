@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import { v4 as uuidv4 } from 'uuid';
 import { ErrorResponse, ApiError } from '~entities';
 import {
   logger, parseError, getRequestUser,
@@ -129,6 +130,7 @@ export class SubjectController {
 
       const subject = {
         id: 0,
+        uuid: uuidv4(),
         firstName: params.firstName,
         middleName: params.middleName,
         lastName: params.lastName,
