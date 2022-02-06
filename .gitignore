@@ -1,6 +1,8 @@
 apidoc/
 env/
 
+test/test-fileshare.ts
+
 
 # Logs
 logs
