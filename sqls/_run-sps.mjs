@@ -61,10 +61,19 @@ if (false) {
 
 const previouslyModifiedFiles = [
   // 'sqls/changes.sql',
-  'sqls/subjects/getSubjectById.sql',
-  'sqls/subjects/subjectList.sql',
-  'sqls/subjects/subjectAdd.sql',
-  'sqls/subjects/subjectUpdate.sql'
+  'sqls/documents/documentAdd.sql',
+  'sqls/documents/documentUpdate.sql',
+  'sqls/documents/documentDelete.sql',
+  'sqls/documents/documentList.sql',
+  'sqls/documents/getDocumentById.sql',
+  'sqls/documents/getDocumentData.sql',
+  'sqls/documents/documentUpdateData.sql',
+  'sqls/documents/getDocumentDataRaw.sql',
+  'sqls/documents/getDocumentOriginalPath.sql'
+  // 'sqls/subjects/getSubjectById.sql',
+  // 'sqls/subjects/subjectList.sql',
+  // 'sqls/subjects/subjectAdd.sql',
+  // 'sqls/subjects/subjectUpdate.sql'
   // 'sqls/login/didLogin.sql',
   // 'sqls/login/didLogout.sql',
   // 'sqls/users/deserializeUser.sql',

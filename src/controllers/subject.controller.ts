@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { ErrorResponse, ApiError } from '~entities';
+import { ApiError, ErrorResponse, SubjectStatus } from '~entities';
 import {
   logger, parseError, getRequestUser,
-  getRequestAdminUser,
   setRequestSubject,
   getRequestSubject,
   userHasRole,
@@ -12,7 +11,6 @@ import {
 import app from '~app';
 import { SubjectDao } from '~daos';
 import Joi from 'joi';
-import { SubjectStatus } from 'src/entities/subject';
 
 
 interface ISubjectDTO {
@@ -65,12 +63,12 @@ export class SubjectController {
    * @return {Promise<void>}
    */
   public async read(req: Request, res: Response): Promise<void> {
-    const user = getRequestAdminUser(req);
-    if (!user) {
+    const subj = getRequestSubject(req);
+    if (!subj) {
       res.status(StatusCodes.NOT_FOUND).send();
       return;
     }
-    res.status(StatusCodes.OK).json(user);
+    res.status(StatusCodes.OK).json(subj);
   }
 
   /**
