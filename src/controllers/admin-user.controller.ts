@@ -295,7 +295,9 @@ export class AdminUserController {
    * @apiGroup User Management
    * @apiVersion 0.1.0
    * @apiPermission admin
-   * @apiDescription Delete the specified user
+   * @apiDescription Delete the specified user allowing to set the specified status to the user
+   *
+   * @apiParam {UserStatus} status
    *
    * @apiErrorExample Error-Response:
    * HTTP 1/1 406

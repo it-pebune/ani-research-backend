@@ -1,5 +1,5 @@
 import { ConnectionPool, IProcedureResult, MAX, Request as SqlRequest, TYPES } from 'mssql';
-import { ISubject, ISubjectAssignedHistory, SubjectStatus } from 'src/entities/subject';
+import { ISubject, ISubjectAssignedHistory, SubjectStatus } from '~entities';
 import { sqlNVarChar, sqlVarChar } from '~shared';
 
 
