@@ -9,6 +9,7 @@ export enum SubjectStatus {
 
 export interface ISubject {
   id: number;
+  uuid: string;
   firstName: string;
   middleName?: string;
   lastName: string;
