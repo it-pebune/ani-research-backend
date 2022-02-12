@@ -1,3 +1,4 @@
+import { FileSASPermissions, ShareFileClient, StorageSharedKeyCredential } from '@azure/storage-file-share';
 import { Response } from 'express';
 
 
@@ -59,3 +60,65 @@ export const streamToBuffer = async (readableStream: NodeJS.ReadableStream): Pro
     readableStream.on('error', reject);
   });
 };
+
+interface IStorageAccountInfo {
+  accountKey: string;
+  accountName: string;
+  fileEndpoint: string;
+}
+
+/**
+ * @param {String} cnnString
+ * @return {IStorageAccountInfo}
+ */
+export function getAccountInfoFromCnnString(cnnString: string): IStorageAccountInfo {
+  const accountInfo = {
+    accountKey: '',
+    accountName: '',
+    fileEndpoint: ''
+  };
+  let endpointSuffix = '';
+  const parts = cnnString.split(';');
+  for (let part of parts) {
+    part = part.trim();
+    if (part.startsWith('AccountName=')) {
+      const result = part.match('AccountName=(.*)');
+      if (result?.length) {
+        accountInfo.accountName = result[1];
+      }
+    } else if (part.startsWith('AccountKey=')) {
+      const result = part.match('AccountKey=(.*)');
+      if (result?.length) {
+        accountInfo.accountKey = result[1];
+      }
+    } else if (part.startsWith('EndpointSuffix=')) {
+      const result = part.match('EndpointSuffix=(.*)');
+      if (result?.length) {
+        endpointSuffix = result[1];
+      }
+    }
+  }
+  accountInfo.fileEndpoint = `https://${accountInfo.accountName}.file.${endpointSuffix}`;
+
+  return accountInfo;
+}
+
+/**
+ * @param {String} storageCnnString Storage account connection string
+ * @param {String} path Resource path
+ * @param {number} expiresIn Expire period in minutes
+ * @return {String}
+ */
+export function generateSasUrl(storageCnnString: string, path: string, expiresIn: number): string {
+  const ai = getAccountInfoFromCnnString(storageCnnString);
+  const credentials = new StorageSharedKeyCredential(ai.accountName, ai.accountKey);
+  const fileClient = new ShareFileClient(path, credentials);
+  const permissions = new FileSASPermissions();
+  permissions.read = true;
+  const expiresOn = new Date(Date.now() + expiresIn * 60_000);
+  const sasUri = fileClient.generateSasUrl({
+    expiresOn,
+    permissions
+  });
+  return sasUri;
+}

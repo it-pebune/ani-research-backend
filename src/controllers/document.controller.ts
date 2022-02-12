@@ -1,13 +1,17 @@
+import { createHash } from 'crypto';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-// import { v4 as uuidv4 } from 'uuid';
-import { ApiError, ErrorResponse } from '~entities';
+import { v4 as uuidv4 } from 'uuid';
+import { ApiError, DocumentType, ErrorResponse, ISubject } from '~entities';
 import {
-  logger, parseError, getRequestUser
+  logger, parseError, getRequestUser, getAccountInfoFromCnnString
 } from '~shared';
 import app from '~app';
-import { DocumentDao } from '~daos';
+import { DocumentDao, SubjectDao } from '~daos';
 import Joi from 'joi';
+import got from 'got';
+
+// const got = require('got');
 
 
 interface IDocumentDTO {
@@ -114,31 +118,95 @@ export class DocumentController {
         return;
       }
 
-      res.status(StatusCodes.NOT_IMPLEMENTED).send();
+      // download file and calculate hash
+      const buff = await this.downloadFile(params.downloadUrl);
+      const hashSum = createHash('sha1'); // quicker than sha256
+      hashSum.update(buff);
+      const md5 = hashSum.digest('base64');
 
-      // const md5 = '';
-      // const originalPath = '';
+      // upload file to storage
+      const sqlpool = await app.sqlPool;
+      const subjDao = new SubjectDao(sqlpool);
+      const subj = await subjDao.getById(params.subjectId);
 
-      // const doc = {
-      //   docId: uuidv4(),
-      //   subjectId: params.subjectId,
-      //   userId: loggedUser.id,
-      //   type: params.type,
-      //   status: params.status,
-      //   name: params.name,
-      //   md5,
-      //   downloadedUrl: params.downloadUrl,
-      //   originalPath
-      // };
+      const subjFolder = this.getSubjectFolder(subj);
+      const declFolder = params.type === DocumentType.assetDeclaration ? 'DA' : 'DI';
+      const docId = uuidv4();
+      const fileName = this.getFilename(params.downloadUrl, docId);
+      const sai = getAccountInfoFromCnnString(process.env.AZURE_STORAGE_OCR_CNNSTR!);
+      // eslint-disable-next-line max-len
+      const originalPath = `${sai.fileEndpoint}/${process.env.SHARE_DECLARATIONS}/${subjFolder}/${declFolder}/${fileName}`;
 
-      // const sqlpool = await app.sqlPool;
+      const doc = {
+        docId,
+        subjectId: params.subjectId,
+        userId: loggedUser.id,
+        type: params.type,
+        status: params.status,
+        name: params.name,
+        md5,
+        downloadedUrl: params.downloadUrl,
+        originalPath
+      };
+      logger.debug(doc);
+
       // const dao = new DocumentDao(sqlpool);
       // await dao.add(doc);
 
-      // res.status(StatusCodes.OK).json(doc);
+      res.status(StatusCodes.OK).json(doc);
     } catch (ex) {
-      logger.error(parseError(ex));
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ErrorResponse(ApiError.internal_error));
+      if (ex instanceof ApiError) {
+        res.status(ex.statusCode).json(new ErrorResponse(ex));
+      } else {
+        logger.error(parseError(ex));
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ErrorResponse(ApiError.internal_error));
+      }
+    }
+  }
+
+  /**
+   * @param {String} url
+   * @param {String} documentId
+   * @return {String}
+   */
+  private getFilename(url: string, documentId: string): string {
+    const re1 = /.+\/(?<filename>.+)$/;
+    const re2 = /.+fileName=(?<filename>.+)&.*/i;
+    let result = url.match(re2);
+    if (result?.groups) {
+      return `${result.groups['filename']}-${documentId}`;
+    }
+    result = url.match(re1);
+    if (result?.groups) {
+      return `${result.groups['filename']}-${documentId}`;
+    }
+    return documentId;
+  }
+
+  /**
+   * @param {ISubject} subject
+   * @return {String}
+   */
+  private getSubjectFolder(subject: ISubject): string {
+    const parts: string[] = [
+      ...subject.lastName.split(/[\s,\-]/),
+      ...(subject.middleName ? subject.middleName.split(/[\s,\-]/) : []),
+      ...subject.firstName.split(/[\s,\-]/),
+      subject.uuid
+    ];
+
+    return parts.join('-');
+  }
+
+  /**
+   * @param {String} url
+   */
+  private async downloadFile(url: string): Promise<Buffer> {
+    try {
+      return await got(url).buffer();
+    } catch (error) {
+      logger.error(parseError(error));
+      throw ApiError.download_file_error.withDetails({ url });
     }
   }
 

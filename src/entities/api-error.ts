@@ -165,6 +165,11 @@ export class ApiError extends Error implements IApiError {
     return new ApiError(StatusCodes.BAD_REQUEST,
       API_ERROR_CODES.VALIDATION_ERROR, 'Input validation failed');
   }
+
+  public static get download_file_error() {
+    return new ApiError(StatusCodes.INTERNAL_SERVER_ERROR,
+      API_ERROR_CODES.DOWNLOAD_FILE_ERROR, 'Error downloading file');
+  }
 }
 
 const API_ERROR_CODES = {
@@ -189,5 +194,6 @@ const API_ERROR_CODES = {
   REQUIRED_AUTH_TOKEN: 'REQUIRED_AUTH_TOKEN',
   REQUIRED_KEY: 'REQUIRED_KEY',
   REQUIRED_PARAMETER: 'REQUIRED_PARAMETER',
-  VALIDATION_ERROR: 'VALIDATION_ERROR'
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  DOWNLOAD_FILE_ERROR: 'DOWNLOAD_FILE_ERROR'
 };
