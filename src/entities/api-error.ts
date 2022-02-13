@@ -170,12 +170,30 @@ export class ApiError extends Error implements IApiError {
     return new ApiError(StatusCodes.INTERNAL_SERVER_ERROR,
       API_ERROR_CODES.DOWNLOAD_FILE_ERROR, 'Error downloading file');
   }
+
+  public static get unknown_subject() {
+    return new ApiError(StatusCodes.BAD_REQUEST,
+      API_ERROR_CODES.UNKNOWN_SUBJECT, 'There is no subject with that id');
+  }
+
+  public static get document_already_exists() {
+    return new ApiError(StatusCodes.BAD_REQUEST,
+      API_ERROR_CODES.DOCUMENT_ALREADY_EXISTS, 'There is already a document with these characteristics');
+  }
+
+  public static get document_not_found() {
+    return new ApiError(StatusCodes.NOT_FOUND,
+      API_ERROR_CODES.DOCUMENT_NOT_FOUND, 'Document not found');
+  }
 }
 
 const API_ERROR_CODES = {
   ACCOUNT_NOT_ACTIVATED: 'ACCOUNT_NOT_ACTIVATED',
   ACCOUNT_SUSPENDED: 'ACCOUNT_SUSPENDED',
   ACCOUNT_BLACKLISTED: 'ACCOUNT_BLACKLISTED',
+  DOWNLOAD_FILE_ERROR: 'DOWNLOAD_FILE_ERROR',
+  DOCUMENT_ALREADY_EXISTS: 'DOCUMENT_ALREADY_EXISTS',
+  DOCUMENT_NOT_FOUND: 'DOCUMENT_NOT_FOUND',
   DUPLICATE_EMAIL: 'DUPLICATE_EMAIL',
   INPUT_TOO_LARGE: 'INPUT_TOO_LARGE',
   INTERNAL_ERROR: 'INTERNAL_ERROR',
@@ -194,6 +212,6 @@ const API_ERROR_CODES = {
   REQUIRED_AUTH_TOKEN: 'REQUIRED_AUTH_TOKEN',
   REQUIRED_KEY: 'REQUIRED_KEY',
   REQUIRED_PARAMETER: 'REQUIRED_PARAMETER',
-  VALIDATION_ERROR: 'VALIDATION_ERROR',
-  DOWNLOAD_FILE_ERROR: 'DOWNLOAD_FILE_ERROR'
+  UNKNOWN_SUBJECT: 'UNKNOWN_SUBJECT',
+  VALIDATION_ERROR: 'VALIDATION_ERROR'
 };

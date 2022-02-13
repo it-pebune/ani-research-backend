@@ -109,7 +109,7 @@ export function getAccountInfoFromCnnString(cnnString: string): IStorageAccountI
  * @param {number} expiresIn Expire period in minutes
  * @return {String}
  */
-export function generateSasUrl(storageCnnString: string, path: string, expiresIn: number): string {
+export function generateSasUrl(storageCnnString: string, path: string, expiresIn: number = 120): string {
   const ai = getAccountInfoFromCnnString(storageCnnString);
   const credentials = new StorageSharedKeyCredential(ai.accountName, ai.accountKey);
   const fileClient = new ShareFileClient(path, credentials);

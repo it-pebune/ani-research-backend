@@ -2,22 +2,26 @@ import { createHash } from 'crypto';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { v4 as uuidv4 } from 'uuid';
-import { ApiError, DocumentType, ErrorResponse, ISubject } from '~entities';
+import { ApiError, DocumentType, DocumentVersion, ErrorResponse, IQueueInput, ISubject } from '~entities';
 import {
-  logger, parseError, getRequestUser, getAccountInfoFromCnnString
+  logger, parseError, getRequestUser, getAccountInfoFromCnnString, generateSasUrl
 } from '~shared';
 import app from '~app';
 import { DocumentDao, SubjectDao } from '~daos';
 import Joi from 'joi';
 import got from 'got';
+import { ShareServiceClient } from '@azure/storage-file-share';
+import { QueueServiceClient } from '@azure/storage-queue';
 
 // const got = require('got');
 
 
 interface IDocumentDTO {
   subjectId: number;
+  jobId: number;
   type: number;
   status: number;
+  date: Date;
   name: string;
   downloadUrl: string;
 }
@@ -104,8 +108,10 @@ export class DocumentController {
 
       const requestSchema = Joi.object<IDocumentDTO>({
         subjectId: Joi.number().required(),
+        jobId: Joi.number().required(),
         type: Joi.number().required(),
         status: Joi.number().required(),
+        date: Joi.date().required(),
         name: Joi.string().required(),
         downloadUrl: Joi.string().required()
       });
@@ -124,36 +130,78 @@ export class DocumentController {
       hashSum.update(buff);
       const md5 = hashSum.digest('base64');
 
-      // upload file to storage
+      // check if document already exists in DB
       const sqlpool = await app.sqlPool;
+      const docDao = new DocumentDao(sqlpool);
+      const exists = await docDao.exists(md5, params.downloadUrl);
+      if (exists) {
+        logger.debug(`there is already a document with this md5: ${md5} ${params.downloadUrl}`);
+        res.status(StatusCodes.BAD_REQUEST).json(new ErrorResponse(ApiError.document_already_exists));
+        return;
+      }
+
+      // upload file to storage
       const subjDao = new SubjectDao(sqlpool);
       const subj = await subjDao.getById(params.subjectId);
+      if (!subj) {
+        logger.debug(`there is no subject with this id: ${params.subjectId}`);
+        res.status(StatusCodes.BAD_REQUEST).json(new ErrorResponse(ApiError.unknown_subject));
+        return;
+      }
 
       const subjFolder = this.getSubjectFolder(subj);
       const declFolder = params.type === DocumentType.assetDeclaration ? 'DA' : 'DI';
       const docId = uuidv4();
-      const fileName = this.getFilename(params.downloadUrl, docId);
+      const fileName = (params.name ? `${params.name}-${docId}` : false) || this.getFilename(params.downloadUrl, docId);
       const sai = getAccountInfoFromCnnString(process.env.AZURE_STORAGE_OCR_CNNSTR!);
       // eslint-disable-next-line max-len
       const originalPath = `${sai.fileEndpoint}/${process.env.SHARE_DECLARATIONS}/${subjFolder}/${declFolder}/${fileName}`;
 
+      const shareServiceClient = ShareServiceClient.fromConnectionString(process.env.AZURE_STORAGE_OCR_CNNSTR!);
+      const shareClient = shareServiceClient.getShareClient(process.env.SHARE_DECLARATIONS!);
+      const subjFolderClient = shareClient.getDirectoryClient(subjFolder);
+      await subjFolderClient.createIfNotExists();
+      const declFolderClient = subjFolderClient.getDirectoryClient(declFolder);
+      await declFolderClient.createIfNotExists();
+      const fileClient = declFolderClient.getFileClient(fileName);
+      await fileClient.create(buff.byteLength);
+      await fileClient.uploadData(buff);
+
       const doc = {
         docId,
         subjectId: params.subjectId,
+        jobId: params.jobId,
         userId: loggedUser.id,
         type: params.type,
         status: params.status,
+        date: params.date,
         name: params.name,
         md5,
         downloadedUrl: params.downloadUrl,
         originalPath
       };
       logger.debug(doc);
+      await docDao.add(doc);
 
-      // const dao = new DocumentDao(sqlpool);
-      // await dao.add(doc);
+      // add message to ocr queue
+      const queueServiceClient = QueueServiceClient.fromConnectionString(process.env.AZURE_STORAGE_OCR_CNNSTR!);
+      const queueClient = queueServiceClient.getQueueClient(process.env.QUEUE_DECLARATION_IN!);
+      const msg: IQueueInput = {
+        type: params.type,
+        formularType: DocumentVersion.v1,
+        storage: 'azure',
+        path: `${subjFolder}/${declFolder}`,
+        filename: fileName,
+        outPath: `${subjFolder}/${declFolder}`,
+        pageImageFilename: 'page_',
+        ocrTableJsonFilename: `${fileName}-table`,
+        ocrCustomJsonFilename: `${fileName}-custom`
+      };
+      logger.debug(msg);
+      const sendMessageResponse = await queueClient.sendMessage(JSON.stringify(msg));
+      logger.debug(sendMessageResponse);
 
-      res.status(StatusCodes.OK).json(doc);
+      res.status(StatusCodes.OK).send();
     } catch (ex) {
       if (ex instanceof ApiError) {
         res.status(ex.statusCode).json(new ErrorResponse(ex));
@@ -249,9 +297,11 @@ export class DocumentController {
       const docId = req.params.docId;
 
       const requestSchema = Joi.object<IDocumentDTO>({
+        jobId: Joi.number().required(),
         name: Joi.string().required(),
         type: Joi.number().required(),
-        status: Joi.number().required()
+        status: Joi.number().required(),
+        date: Joi.date().required()
       });
       const { value: params, error: verror } = requestSchema.validate(req.body);
       if (verror || !params) {
@@ -265,9 +315,11 @@ export class DocumentController {
       const doc = {
         docId,
         subjectId: 0,
+        jobId: params.jobId,
         userId: loggedUser.id,
         type: params.type,
         status: params.status,
+        date: params.date,
         name: params.name,
         md5: '',
         downloadedUrl: '',
@@ -572,8 +624,13 @@ export class DocumentController {
       const sqlpool = await app.sqlPool;
       const dao = new DocumentDao(sqlpool);
       const result = await dao.getOriginalPath(req.params.docId);
+      if (!result || !result.originalPath) {
+        res.status(StatusCodes.NOT_FOUND).json(new ErrorResponse(ApiError.document_not_found));
+        return;
+      }
 
-      res.status(StatusCodes.OK).json(result);
+      const sasUrl = generateSasUrl(process.env.AZURE_STORAGE_OCR_CNNSTR!, result.originalPath, 60);
+      res.status(StatusCodes.OK).json({ url: sasUrl });
     } catch (ex) {
       logger.error(parseError(ex));
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ErrorResponse(ApiError.internal_error));
