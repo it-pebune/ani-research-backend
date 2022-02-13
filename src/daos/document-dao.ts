@@ -18,7 +18,7 @@ interface IDocumentDTO {
 }
 
 /**
- * User Data Access
+ * Document Data Access
  */
 export class DocumentDao {
   private sql: ConnectionPool;
@@ -79,7 +79,7 @@ export class DocumentDao {
         .input('status', TYPES.TinyInt, doc.status)
         .input('date', TYPES.Date, doc.date)
         .input('name', sqlVarChar(MAX), doc.name)
-        .input('md5', sqlVarChar(MAX), doc.md5)
+        .input('md5', sqlVarChar(32), doc.md5)
         .input('downloadedUrl', sqlVarChar(MAX), doc.downloadedUrl)
         .input('originalPath', sqlVarChar(MAX), doc.originalPath);
 
@@ -151,7 +151,7 @@ export class DocumentDao {
   /**
    * Get subject' document list
    * @param {number} subjectId
-   * @return {Promise<ISubject[]>}
+   * @return {Promise<IDocument[]>}
    */
   public async list(subjectId: number): Promise<IDocument[]> {
     try {

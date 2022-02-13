@@ -330,7 +330,7 @@ export class DocumentController {
       const dao = new DocumentDao(sqlpool);
       await dao.update(doc);
 
-      res.status(StatusCodes.OK).json({});
+      res.status(StatusCodes.OK).send();
     } catch (ex) {
       logger.error(parseError(ex));
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ErrorResponse(ApiError.internal_error));
@@ -397,7 +397,7 @@ export class DocumentController {
   }
 
   /**
-   * @api {delete} /api/docs/:subjectId Delete the specified document
+   * @api {delete} /api/docs/:docId Delete the specified document
    * @apiName DocumentDelete
    * @apiGroup Document Management
    * @apiVersion 0.5.0
