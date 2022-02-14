@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { v4 as uuidv4 } from 'uuid';
-import { SubjectStatus, ErrorResponse, ApiError,  } from '~entities';
+import { SubjectStatus, ErrorResponse, ApiError } from '~entities';
 import {
   logger, parseError, getRequestUser,
   setRequestSubject,

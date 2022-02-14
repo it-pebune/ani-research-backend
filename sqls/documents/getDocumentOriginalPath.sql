@@ -11,7 +11,7 @@ AS
 BEGIN
   SET NOCOUNT ON
 
-  SELECT  D.id, D.originalPath
+  SELECT  D.originalPath
   FROM    [Document] D
   WHERE   D.id = @id
 END

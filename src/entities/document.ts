@@ -5,6 +5,11 @@ export enum DocumentType {
   interestDeclaration = 1
 }
 
+export enum DocumentVersion {
+  v1 = 1,
+  v2 = 2
+}
+
 export enum DocumentStatus {
   waitingOCR = 0,
   ocrCompleted = 1,
@@ -29,4 +34,16 @@ export interface IDocument {
   updated?: Date;
   updatedBy?: number;
   updatedByName?: string;
+}
+
+export interface IQueueInput {
+  documentId: string;
+  type: DocumentType;
+  formularType: DocumentVersion;
+  storage: string;
+  path: string;
+  filename: string;
+  outPath: string;
+  ocrTableJsonFilename: string;
+  ocrCustomJsonFilename: string;
 }

@@ -1,6 +1,6 @@
 {
   "name": "main-apis",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .ts .",
@@ -36,7 +36,7 @@
     "express-http-context": "^1.2.4",
     "express-jwt": "^6.1.0",
     "google-auth-library": "^7.11.0",
-    "got": "^12.0.1",
+    "got": "^11.8.3",
     "helmet": "^5.0.1",
     "http-errors": "^2.0.0",
     "http-status-codes": "^2.2.0",
@@ -84,7 +84,7 @@
   },
   "apidoc": {
     "name": "ANI / BUNE - Research REST API",
-    "version": "0.3.0",
+    "version": "0.6.0",
     "url": "https://api-research.azurewebsites.net"
   }
 }

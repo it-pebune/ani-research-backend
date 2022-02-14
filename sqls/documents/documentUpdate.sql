@@ -9,8 +9,10 @@ GO
 CREATE PROCEDURE [dbo].documentUpdate(
   @docId  VARCHAR(50),
   @userId INT,
+  @jobId  INT,
   @type   TINYINT,
   @status TINYINT,
+  @date   DATE,
   @name   VARCHAR(MAX)
 )
 AS
@@ -18,8 +20,10 @@ BEGIN
   SET NOCOUNT ON
 
   UPDATE  Document
-  SET     [type] = @type,
+  SET     jobId = @jobId,
+          [type] = @type,
           [status] = @status,
+          [date] = @date,
           [name] = @name,
           updatedBy = @userId,
           updated = GETDATE()

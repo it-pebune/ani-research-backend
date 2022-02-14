@@ -3,5 +3,7 @@ export * from './auth';
 export * from './document';
 export * from './error-response';
 export * from './google-client';
+export * from './institution';
+export * from './job-position';
 export * from './subject';
 export * from './user';

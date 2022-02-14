@@ -64,6 +64,7 @@ const previouslyModifiedFiles = [
   'sqls/documents/documentAdd.sql',
   'sqls/documents/documentUpdate.sql',
   'sqls/documents/documentDelete.sql',
+  'sqls/documents/documentExists.sql',
   'sqls/documents/documentList.sql',
   'sqls/documents/getDocumentById.sql',
   'sqls/documents/getDocumentData.sql',

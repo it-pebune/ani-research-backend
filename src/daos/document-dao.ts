@@ -5,10 +5,12 @@ import { sqlVarChar } from '~shared';
 
 interface IDocumentDTO {
   docId: string;
+  jobId: number;
   subjectId: number;
   userId: number;
   type: DocumentType;
   status: DocumentStatus;
+  date: Date;
   name: string;
   md5: string;
   downloadedUrl: string;
@@ -16,7 +18,7 @@ interface IDocumentDTO {
 }
 
 /**
- * User Data Access
+ * Document Data Access
  */
 export class DocumentDao {
   private sql: ConnectionPool;
@@ -31,13 +33,31 @@ export class DocumentDao {
   /**
    * Get document by id
    * @param {string} id
-   * @return {Promise<ISubject>}
+   * @return {Promise<IDocument>}
    */
   public async getById(id: string): Promise<IDocument> {
     try {
       const result = await new SqlRequest(this.sql)
         .input('id', sqlVarChar(50), id)
         .execute('getDocumentById');
+      return result.recordset[0];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Check if a document with the same md5 and downloaded url exists
+   * @param {string} md5
+   * @param {string} downloadedUrl
+   * @return {Promise<IDocument>}
+   */
+  public async exists(md5: string, downloadedUrl: string): Promise<IDocument> {
+    try {
+      const result = await new SqlRequest(this.sql)
+        .input('md5', sqlVarChar(32), md5)
+        .input('downloadedUrl', sqlVarChar(MAX), downloadedUrl)
+        .execute('documentExists');
       return result.recordset[0];
     } catch (error) {
       throw error;
@@ -52,12 +72,14 @@ export class DocumentDao {
     try {
       const sqlReq = new SqlRequest(this.sql)
         .input('docId', sqlVarChar(50), doc.docId)
+        .input('jobId', TYPES.Int, doc.jobId)
         .input('subjectId', TYPES.Int, doc.subjectId)
         .input('userId', TYPES.Int, doc.userId)
         .input('type', TYPES.TinyInt, doc.type)
         .input('status', TYPES.TinyInt, doc.status)
+        .input('date', TYPES.Date, doc.date)
         .input('name', sqlVarChar(MAX), doc.name)
-        .input('md5', sqlVarChar(MAX), doc.md5)
+        .input('md5', sqlVarChar(32), doc.md5)
         .input('downloadedUrl', sqlVarChar(MAX), doc.downloadedUrl)
         .input('originalPath', sqlVarChar(MAX), doc.originalPath);
 
@@ -76,9 +98,11 @@ export class DocumentDao {
     try {
       const sqlReq = new SqlRequest(this.sql)
         .input('docId', sqlVarChar(50), doc.docId)
+        .input('jobId', TYPES.Int, doc.jobId)
         .input('userId', TYPES.Int, doc.userId)
         .input('type', TYPES.TinyInt, doc.type)
         .input('status', TYPES.TinyInt, doc.status)
+        .input('date', TYPES.Date, doc.date)
         .input('name', sqlVarChar(MAX), doc.name);
 
       const result = await sqlReq.execute('documentUpdate');
@@ -127,7 +151,7 @@ export class DocumentDao {
   /**
    * Get subject' document list
    * @param {number} subjectId
-   * @return {Promise<ISubject[]>}
+   * @return {Promise<IDocument[]>}
    */
   public async list(subjectId: number): Promise<IDocument[]> {
     try {
