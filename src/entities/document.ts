@@ -37,13 +37,13 @@ export interface IDocument {
 }
 
 export interface IQueueInput {
+  documentId: string;
   type: DocumentType;
   formularType: DocumentVersion;
   storage: string;
   path: string;
   filename: string;
   outPath: string;
-  pageImageFilename: string;
   ocrTableJsonFilename: string;
   ocrCustomJsonFilename: string;
 }

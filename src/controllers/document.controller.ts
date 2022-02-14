@@ -187,13 +187,13 @@ export class DocumentController {
       const queueServiceClient = QueueServiceClient.fromConnectionString(process.env.AZURE_STORAGE_OCR_CNNSTR!);
       const queueClient = queueServiceClient.getQueueClient(process.env.QUEUE_DECLARATION_IN!);
       const msg: IQueueInput = {
+        documentId: docId,
         type: params.type,
         formularType: DocumentVersion.v1,
         storage: 'azure',
         path: `${subjFolder}/${declFolder}`,
         filename: fileName,
         outPath: `${subjFolder}/${declFolder}`,
-        pageImageFilename: 'page_',
         ocrTableJsonFilename: `${fileName}-table`,
         ocrCustomJsonFilename: `${fileName}-custom`
       };
