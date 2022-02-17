@@ -28,7 +28,7 @@ try {
     file.unset('scripts.deploy');
     file.unset('scripts.deploy-doc');
     file.unset('scripts.deploy-docpriv');
-    file.unset('scripts.start:dev');
+    file.unset('scripts.dev');
     file.unset('scripts.lint');
     file.unset('scripts.test');
     file.unset('scripts.start');

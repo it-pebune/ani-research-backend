@@ -27,14 +27,23 @@ jobs:
           npm run build --if-present
           npm run test --if-present
 
+      - name: npm install prod
+        run: |
+          cd dist
+          npm install --prod
+          cd ..
+
       - name: Zip artifact for deployment
-        run: zip -r deployment_archive.zip ./dist/*
+        run: |
+          cd dist/
+          zip -r ../dist.zip .
+          cd ..
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: deployment_archive.zip
+          path: dist.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -49,8 +58,8 @@ jobs:
         with:
           name: node-app
 
-      - name: Unzip artifact for deployment
-        run: unzip deployment_archive.zip
+      # - name: Unzip artifact for deployment
+      #   run: unzip dist.zip
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
@@ -59,4 +68,4 @@ jobs:
           app-name: 'ani-research-api-qa'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FE0D34EF45164562AD4A30293B85ABAB }}
-          package: deployment_archive.zip
+          package: dist.zip
