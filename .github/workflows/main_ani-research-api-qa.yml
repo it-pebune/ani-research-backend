@@ -19,7 +19,7 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v1
         with:
-          node-version: '16.x'
+          node-version: '14.x'
 
       - name: npm install, build, and test
         run: |
@@ -28,7 +28,7 @@ jobs:
           npm run test --if-present
 
       - name: Zip artifact for deployment
-        run: zip deployment_archive.zip ./dist/* -r
+        run: zip -r deployment_archive.zip ./dist/*
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
@@ -59,4 +59,4 @@ jobs:
           app-name: 'ani-research-api-qa'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FE0D34EF45164562AD4A30293B85ABAB }}
-          package: .
+          package: deployment_archive.zip
