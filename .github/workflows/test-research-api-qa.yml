@@ -29,13 +29,13 @@ jobs:
 
       - name: npm install prod
         run: |
-          cd dist
+          cd dist/
           npm ci
 
       - name: Zip artifact for deployment
         run: |
+          cd dist/
           zip -r ../dist.zip .
-          cd ..
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
