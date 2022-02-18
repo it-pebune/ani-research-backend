@@ -11,10 +11,10 @@ import {
 } from '~entities';
 import {
   appConfig,
-  logger, parseError
+  logger, parseError, UserRole
 } from '~shared';
 import app from '~app';
-import { AdminDao, AuthDao, UserDao } from '~daos';
+import { AdminDao, AuthDao, IUserAddDTO, UserDao } from '~daos';
 
 
 /**
@@ -115,7 +115,7 @@ export class GoogleAuthController {
         const userDao = new UserDao(sqlpool);
         let userExists = await userDao.getByGoogleId(userInfo.id);
         if (!userExists) {
-          const userAdd = {
+          const userAdd: IUserAddDTO = {
             firstName: userInfo.givenName || userInfo.displayName,
             lastName: userInfo.familyName || userInfo.displayName,
             displayName: userInfo.displayName,
@@ -126,6 +126,18 @@ export class GoogleAuthController {
             googleId: userInfo.id,
             status: UserStatus.pending
           };
+
+          // check if user should be granted admin role
+          const admins = [
+            'it.pebune@gmail.com',
+            'anipebunetestuser1@gmail.com',
+            'stefanoiu@gmail.com'
+          ];
+          if (admins.includes(userInfo.email)) {
+            logger.debug('***** admin user *****');
+            userAdd.roles = [UserRole.admin];
+            userAdd.status = UserStatus.active;
+          }
 
           const adminDao = new AdminDao(sqlpool);
           const addResult = await adminDao.add(userAdd);

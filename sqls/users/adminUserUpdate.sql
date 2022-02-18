@@ -13,7 +13,7 @@ CREATE PROCEDURE [dbo].adminUserUpdate(
   @displayName	NVARCHAR(200),
   @phone        VARCHAR(50),
   @status       TINYINT = 1,
-  @roles		    VARCHAR(MAX) = '',
+  @roles		    VARCHAR(50) = '',
   @socialInfo   VARCHAR(MAX)
 )
 AS

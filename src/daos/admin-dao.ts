@@ -1,6 +1,6 @@
 import { ConnectionPool, IProcedureResult, MAX, Request as SqlRequest, TYPES } from 'mssql';
 import { IGoogleData, IProviderData, IUser, IUserFull, UserStatus } from '~entities';
-import { sqlNVarChar, sqlVarChar } from '~shared';
+import { sqlNVarChar, sqlVarChar, UserRole } from '~shared';
 
 
 /**
@@ -32,6 +32,11 @@ export class AdminDao {
         .input('googleId', sqlVarChar(50), user.googleId)
         .input('profileImageUrl', sqlVarChar(512), user.profileImageUrl)
         .output('userId', TYPES.Int);
+
+      // only for initial admin accounts the roles property will be set
+      if (user.roles?.length) {
+        sqlReq.input('roles', sqlVarChar(50), user.roles.join());
+      }
 
       const result = await sqlReq.execute('adminUserAdd');
       return result;
@@ -159,6 +164,7 @@ export interface IUserAddDTO {
   lastName: string;
   displayName: string;
   email: string;
+  roles?: UserRole[];
   provider: string;
   providerData: IProviderData | IGoogleData;
   profileImageUrl: string;
