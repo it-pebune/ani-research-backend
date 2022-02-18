@@ -2,6 +2,7 @@ apidoc/
 env/
 
 test/test-fileshare.ts
+test/azure-settings.json
 
 
 # Logs

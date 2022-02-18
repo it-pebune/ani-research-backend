@@ -7,15 +7,16 @@ END
 GO
 
 CREATE PROCEDURE [dbo].adminUserAdd(
-  @email varchar(50),
-  @firstName varchar(100),
-  @lastName varchar(100),
-  @displayName varchar(200),
-  @provider varchar(50),
-  @googleId varchar(50),
-  @profileImageUrl varchar(512) = '',
-  @providerData varchar(MAX) = '',
-  @userId int output
+  @email          VARCHAR(50),
+  @firstName      VARCHAR(100),
+  @lastName       VARCHAR(100),
+  @displayName    VARCHAR(200),
+  @provider       VARCHAR(50),
+  @googleId       VARCHAR(50),
+  @roles		      VARCHAR(50) = NULL,
+  @profileImageUrl VARCHAR(512) = '',
+  @providerData   VARCHAR(MAX) = '',
+  @userId         INT OUTPUT
 )
 AS
 BEGIN
@@ -35,6 +36,21 @@ BEGIN
   END
 
   SET @userId = SCOPE_IDENTITY()
+
+  IF LEN(ISNULL(@roles, '')) > 0
+  BEGIN
+    INSERT INTO UserRoles
+      (userId, roleId)
+    SELECT @userId, CAST(Value AS INT)
+    FROM STRING_SPLIT(@roles, ',')
+    WHERE LEN(Value) > 0
+
+    IF @@ERROR <> 0
+    BEGIN
+      ROLLBACK TRANSACTION
+      RETURN -2
+    END
+  END
 
   COMMIT TRANSACTION
 END
