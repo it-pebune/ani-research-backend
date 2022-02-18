@@ -1,16 +1,16 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - ani-research-api-qa
+name: Build and deploy Node.js app to Azure Web App - research-api-qa
 
 on:
   push:
     branches:
-      - workflow-tests
+      - main
   workflow_dispatch:
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,23 +21,23 @@ jobs:
         with:
           node-version: '14.x'
 
-      - name: npm install, build, and test
+      - name: Install dependencies, build, and test
         run: |
           npm install
           npm run build --if-present
           npm run test --if-present
 
-      - name: npm install prod
+      - name: Install dependencies for production
         run: |
           cd dist/
           npm ci
 
-      - name: Zip artifact for deployment
+      - name: Zip output artifact for deployment
         run: |
           cd dist/
           zip -r ../dist.zip .
 
-      - name: 'Deploy to Azure Web App'
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:

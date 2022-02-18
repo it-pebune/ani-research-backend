@@ -1,11 +1,10 @@
 {
   "name": "main-apis",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .ts .",
-    "build": "npm --no-git-tag-version version patch && node ./util/build.js",
-    "deploy": "../utils/deploy-backend.sh",
+    "build": "node ./util/build.js",
     "start": "node ./dist",
     "dev": "nodemon --config nodemon.json",
     "apidoc": "apidoc -i ./ -o apidoc/ -e node_modules/ -e scripts/ -e sqls/ -e tests/ -e policies/ -e config/ -e spec/ -e apidoc/"
