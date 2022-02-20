@@ -1,6 +1,6 @@
 {
   "name": "main-apis",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .ts .",
@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@azure/data-tables": "^13.0.1",
+    "@azure/storage-blob": "^12.8.0",
     "@azure/storage-file-share": "^12.8.0",
     "@azure/storage-queue": "^12.7.0",
     "body-parser": "^1.19.1",
@@ -83,7 +84,7 @@
   },
   "apidoc": {
     "name": "ANI / BUNE - Research REST API",
-    "version": "0.6.0",
+    "version": "0.8.0",
     "url": "https://api-research.azurewebsites.net"
   }
 }

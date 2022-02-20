@@ -7,6 +7,7 @@ import JobRouter from './job-position';
 import SubjectRouter from './subjects';
 import UatRouter from './uats';
 import UserRouter from './users';
+import WebScrapRouter from './web-scrap';
 
 // Init router and path
 // eslint-disable-next-line new-cap
@@ -21,6 +22,7 @@ router.use('/subjects', SubjectRouter);
 router.use('/uat', UatRouter);
 router.use('/users', UserRouter);
 router.use('/users', AdminUserRouter);
+router.use('/webscrap', WebScrapRouter);
 
 // Export the base-router
 export default router;

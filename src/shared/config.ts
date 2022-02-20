@@ -1,6 +1,14 @@
 import { IGoogleClientInfo } from '~entities';
 import { getAccountInfoFromCnnString, IStorageAccountInfo } from './utils';
 
+interface IWebScrapApi {
+  baseUrl: string;
+  key: string;
+  getMPListUrl: string;
+  getMPDetailsUrl: string;
+  getDeclarationsUrl: string;
+}
+
 export interface IAppConfig {
   app: {
     title: string;
@@ -26,6 +34,7 @@ export interface IAppConfig {
   storageGenInfo: IStorageAccountInfo;
   storageOcrCnnString: string;
   storageOcrInfo: IStorageAccountInfo;
+  webScrapApi: IWebScrapApi;
 }
 
 let _appConfig: IAppConfig | null = null;
@@ -41,6 +50,13 @@ export const appConfig = (refresh: boolean = false): IAppConfig => {
   const storageGenInfo = getAccountInfoFromCnnString(storageGenCnnString);
   const storageOcrCnnString = getEnvVariable('AZURE_STORAGE_OCR_CNNSTR');
   const storageOcrInfo = getAccountInfoFromCnnString(storageOcrCnnString);
+  const webScrapApi: IWebScrapApi = {
+    baseUrl: getEnvVariable('WEBSCRAP_API_BASEURL'),
+    getMPListUrl: getEnvVariable('WEBSCRAP_API_GETMPS'),
+    getMPDetailsUrl: getEnvVariable('WEBSCRAP_API_GETMPD'),
+    getDeclarationsUrl: getEnvVariable('WEBSCRAP_API_DECLS'),
+    key: getEnvVariable('WEBSCRAP_API_KEY')
+  };
 
   _appConfig = {
     app: {
@@ -66,7 +82,8 @@ export const appConfig = (refresh: boolean = false): IAppConfig => {
     storageGenCnnString,
     storageGenInfo,
     storageOcrCnnString,
-    storageOcrInfo
+    storageOcrInfo,
+    webScrapApi
   };
 
   return _appConfig;

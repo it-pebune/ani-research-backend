@@ -7,3 +7,4 @@ export * from './job-position.controller';
 export * from './subject.controller';
 export * from './uat.controller';
 export * from './user.controller';
+export * from './web-scrapping.controller';
