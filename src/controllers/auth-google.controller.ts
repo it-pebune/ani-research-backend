@@ -6,7 +6,7 @@ import Joi from 'joi';
 import { v4 as uuidv4 } from 'uuid';
 import * as jwt from 'jsonwebtoken';
 import {
-  ErrorResponse, ApiError, IGoogleClientInfo,
+  ErrorResponse, ApiError,
   IProviderData, IAuthToken, IAuthResponse, UserStatus, IGoogleData
 } from '~entities';
 import {
@@ -92,7 +92,7 @@ export class GoogleAuthController {
         return;
       }
 
-      const keys = this.getGoogleClientInfo();
+      const keys = appConfig().googleClientInfo;
       if (keys.redirect_uris.indexOf(query.redirect_uri) < 0) {
         res.status(StatusCodes.BAD_REQUEST).json(new ErrorResponse(ApiError.invalid_redirect_uri));
         return;
@@ -174,7 +174,7 @@ export class GoogleAuthController {
         logger.debug(userExists);
 
         const sessionId = uuidv4();
-        const jwtBearerToken = jwt.sign({}, appConfig.authentication.private, {
+        const jwtBearerToken = jwt.sign({}, appConfig().authentication.private, {
           algorithm: 'RS256',
           expiresIn: '2h',
           subject: JSON.stringify({
@@ -267,7 +267,7 @@ export class GoogleAuthController {
         return;
       }
 
-      const keys = this.getGoogleClientInfo();
+      const keys = appConfig().googleClientInfo;
       if (keys.redirect_uris.indexOf(query.redirect_uri) < 0) {
         res.status(StatusCodes.BAD_REQUEST).json(new ErrorResponse(ApiError.invalid_redirect_uri));
         return;
@@ -296,17 +296,6 @@ export class GoogleAuthController {
       logger.error(parseError(ex));
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ErrorResponse(ApiError.internal_error));
     }
-  }
-
-  /**
-   * @return {IGoogleClientInfo}
-   */
-  private getGoogleClientInfo(): IGoogleClientInfo {
-    if (!process.env.GOOGLE_CLIENT_INFO) {
-      throw new Error('Missing Google client into');
-    }
-    const json = JSON.parse(process.env.GOOGLE_CLIENT_INFO);
-    return json.web;
   }
 
   /**

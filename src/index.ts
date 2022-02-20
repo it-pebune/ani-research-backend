@@ -1,6 +1,6 @@
 import './loadenv'; // Must be the first import
 import mainApp from './app';
-import { logger, parseError } from '~shared';
+import { appConfig, logger, parseError } from '~shared';
 
 
 /**
@@ -26,7 +26,7 @@ const normalizePort = (val: string): string | number | boolean => {
 
 // Start the server
 export const main = async () => {
-  const port = normalizePort(process.env.PORT || '3300');
+  const port = normalizePort(appConfig().port);
   logger.info('Starting...');
   try {
     const expressApp = await mainApp.init();

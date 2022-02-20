@@ -13,8 +13,8 @@ import consolidate from 'consolidate';
 import { v4 as uuidv4 } from 'uuid';
 import pkg from '../package.json';
 import {
-  logger as winston, loggerStream as winstonStream,
-  parseError, hasKey, setHttpCtxUser, setRequestUser, setHttpCtxReqId
+  appConfig, logger as winston, loggerStream as winstonStream,
+  parseError, hasKey, setHttpCtxUser, setRequestUser, setHttpCtxReqId, IAppConfig
 } from '~shared';
 import { NextFunction } from 'connect';
 import { initServerRolesPolicy } from '~policies';
@@ -31,12 +31,18 @@ const JWT_PROPERTY_NAME = 'vxmt_property_auth';
 class App {
   private app = express();
   private sqlConnectionPool: any;
+  private appCfg: IAppConfig;
 
   /**
    * @return {express.Application}
    */
   public get expressApp(): express.Application {
     return this.app;
+  }
+
+  /** Constructor */
+  constructor() {
+    this.appCfg = appConfig();
   }
 
   /**
@@ -56,7 +62,7 @@ class App {
    * @return {Promise<void>}
    */
   private async initDatabase(): Promise<void> {
-    const sqlConfig: any = JSON.parse(process.env.AZURE_SQL || '');
+    const sqlConfig: any = JSON.parse(this.appCfg.sqlCnnString);
     this.sqlConnectionPool = await new ConnectionPool(sqlConfig).connect();
     winston.info(`Connected to SQL: ${sqlConfig.server}:${sqlConfig.database}`);
     return this.sqlConnectionPool;
@@ -71,11 +77,9 @@ class App {
       '/api/auth/google/signin'
     ];
 
-    const keyPair = JSON.parse(process.env.AUTH_KEYS || '');
-
     this.app.use(expressJwt({
       algorithms: ['RS256'],
-      secret: keyPair.public,
+      secret: this.appCfg.authentication.public,
       requestProperty: JWT_PROPERTY_NAME
     }).unless({
       path: exceptedPaths
@@ -145,7 +149,7 @@ class App {
       }
       // set locals, only providing error in development
       res.locals.message = err.message || err;
-      res.locals.error = process.env.NODE_ENV === 'development' ? err : {};
+      res.locals.error = this.appCfg.nodeEnv === 'development' ? err : {};
 
       // render the error page
       res.status(err.status || 500).send(err.message || err);
@@ -190,7 +194,7 @@ class App {
 
     this.app.use(helmet());
     this.app.use(helmet.frameguard({ action: 'DENY' }));
-    if (process.env.NODE_ENV === 'development') {
+    if (this.appCfg.nodeEnv === 'development') {
       this.app.use(logger('dev'));
     } else {
       const morganOptions: logger.Options<ExpressRequest, ExpressResponse> = {
