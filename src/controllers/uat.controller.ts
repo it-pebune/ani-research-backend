@@ -21,7 +21,7 @@ export class UatController {
    * @apiName UatCounties
    * @apiGroup UAT
    * @apiVersion 0.3.0
-   * @apiPermission coordinator, reviewer, researcher
+   * @apiPermission *
    * @apiDescription Get a list of counties
    *
    * @apiSuccess {Object[]} counties List of counties
@@ -60,7 +60,7 @@ export class UatController {
    * @apiName UatUats
    * @apiGroup UAT
    * @apiVersion 0.3.0
-   * @apiPermission coordinator, reviewer, researcher
+   * @apiPermission *
    * @apiDescription Get a list of uats
    *
    * @apiSuccess {Object[]} uats List of uats
