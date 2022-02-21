@@ -112,7 +112,7 @@ export class GeneralAuthController {
         sessionId: uuidv4()
       };
 
-      const jwtBearerToken = jwt.sign({}, appConfig.authentication.private, {
+      const jwtBearerToken = jwt.sign({}, appConfig().authentication.private, {
         algorithm: 'RS256',
         expiresIn: '2h',
         subject: JSON.stringify({

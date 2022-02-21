@@ -61,9 +61,10 @@ export const streamToBuffer = async (readableStream: NodeJS.ReadableStream): Pro
   });
 };
 
-interface IStorageAccountInfo {
+export interface IStorageAccountInfo {
   accountKey: string;
   accountName: string;
+  blobEndpoint: string;
   fileEndpoint: string;
 }
 
@@ -75,6 +76,7 @@ export function getAccountInfoFromCnnString(cnnString: string): IStorageAccountI
   const accountInfo = {
     accountKey: '',
     accountName: '',
+    blobEndpoint: '',
     fileEndpoint: ''
   };
   let endpointSuffix = '';
@@ -98,20 +100,20 @@ export function getAccountInfoFromCnnString(cnnString: string): IStorageAccountI
       }
     }
   }
+  accountInfo.blobEndpoint = `https://${accountInfo.accountName}.blob.${endpointSuffix}`;
   accountInfo.fileEndpoint = `https://${accountInfo.accountName}.file.${endpointSuffix}`;
 
   return accountInfo;
 }
 
 /**
- * @param {String} storageCnnString Storage account connection string
+ * @param {IStorageAccountInfo} accountInfo Storage account info
  * @param {String} path Resource path
  * @param {number} expiresIn Expire period in minutes
  * @return {String}
  */
-export function generateSasUrl(storageCnnString: string, path: string, expiresIn: number = 120): string {
-  const ai = getAccountInfoFromCnnString(storageCnnString);
-  const credentials = new StorageSharedKeyCredential(ai.accountName, ai.accountKey);
+export function generateSasUrl(accountInfo: IStorageAccountInfo, path: string, expiresIn: number = 120): string {
+  const credentials = new StorageSharedKeyCredential(accountInfo.accountName, accountInfo.accountKey);
   const fileClient = new ShareFileClient(path, credentials);
   const permissions = new FileSASPermissions();
   permissions.read = true;

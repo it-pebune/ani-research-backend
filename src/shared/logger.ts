@@ -8,8 +8,10 @@ import { inspect } from 'util';
 import httpContext from 'express-http-context';
 import { createLogger, format, transports } from 'winston';
 import AzureTableTransport from './winston-azuretable';
-import { getHttpCtxUser, getHttpCtxReqId, hasKey } from '~shared';
+import { appConfig, getHttpCtxUser, getHttpCtxReqId, hasKey } from '~shared';
 const { printf } = format;
+
+const appCfg = appConfig();
 
 const azureFormat = format((info) => {
   const reqId = getHttpCtxReqId(httpContext);
@@ -42,21 +44,21 @@ const winstonUiLogger = createLogger({
  * to `combined.log. Write all logs error (and below) to `error.log`.
  * For development, print to the console.
  */
-if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
+if (appCfg.nodeEnv === 'production' || appCfg.nodeEnv === 'staging') {
   const azureTransport = new AzureTableTransport({
-    connectionString: process.env.AZURE_STORAGE_CNNSTR,
-    tableName: process.env.LOG_TABLE_NAME || (`rpbresearch${process.env.NODE_ENV}`),
+    connectionString: appCfg.storageGenCnnString,
+    tableName: appCfg.logTableName || (`rpbresearch${appCfg.nodeEnv}`),
     partition: 'research',
-    level: (process.env.NODE_ENV === 'staging' ? 'debug' : 'debug'),
+    level: (appCfg.nodeEnv === 'staging' ? 'debug' : 'debug'),
     format: azureFormat()
   });
   winstonLogger.add(azureTransport);
 
   const azureTransportUI = new AzureTableTransport({
-    connectionString: process.env.AZURE_STORAGE_CNNSTR,
-    tableName: process.env.UILOG_TABLE_NAME || (`rpbresearch${process.env.NODE_ENV}ui`),
+    connectionString: appCfg.storageGenCnnString,
+    tableName: appCfg.logUITableName || (`rpbresearch${appCfg.nodeEnv}ui`),
     partition: 'research',
-    level: (process.env.NODE_ENV === 'staging' ? 'debug' : 'debug'),
+    level: (appCfg.nodeEnv === 'staging' ? 'debug' : 'debug'),
     format: azureFormat()
   });
   winstonUiLogger.add(azureTransportUI);

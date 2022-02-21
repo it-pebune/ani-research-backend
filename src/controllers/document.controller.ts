@@ -4,7 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import { v4 as uuidv4 } from 'uuid';
 import { ApiError, DocumentType, DocumentVersion, ErrorResponse, IQueueInput, ISubject } from '~entities';
 import {
-  logger, parseError, getRequestUser, getAccountInfoFromCnnString, generateSasUrl
+  appConfig, logger, parseError, getRequestUser, generateSasUrl
 } from '~shared';
 import app from '~app';
 import { DocumentDao, SubjectDao } from '~daos';
@@ -124,6 +124,8 @@ export class DocumentController {
         return;
       }
 
+      const appCfg = appConfig();
+
       // download file and calculate hash
       const buff = await this.downloadFile(params.downloadUrl);
       const hashSum = createHash('sha1'); // quicker than sha256
@@ -153,12 +155,11 @@ export class DocumentController {
       const declFolder = params.type === DocumentType.assetDeclaration ? 'DA' : 'DI';
       const docId = uuidv4();
       const fileName = (params.name ? `${params.name}-${docId}` : false) || this.getFilename(params.downloadUrl, docId);
-      const sai = getAccountInfoFromCnnString(process.env.AZURE_STORAGE_OCR_CNNSTR!);
       // eslint-disable-next-line max-len
-      const originalPath = `${sai.fileEndpoint}/${process.env.SHARE_DECLARATIONS}/${subjFolder}/${declFolder}/${fileName}`;
+      const originalPath = `${appCfg.storageOcrInfo.fileEndpoint}/${appCfg.shareDeclarations}/${subjFolder}/${declFolder}/${fileName}`;
 
-      const shareServiceClient = ShareServiceClient.fromConnectionString(process.env.AZURE_STORAGE_OCR_CNNSTR!);
-      const shareClient = shareServiceClient.getShareClient(process.env.SHARE_DECLARATIONS!);
+      const shareServiceClient = ShareServiceClient.fromConnectionString(appCfg.storageOcrCnnString);
+      const shareClient = shareServiceClient.getShareClient(appCfg.shareDeclarations);
       const subjFolderClient = shareClient.getDirectoryClient(subjFolder);
       await subjFolderClient.createIfNotExists();
       const declFolderClient = subjFolderClient.getDirectoryClient(declFolder);
@@ -184,8 +185,8 @@ export class DocumentController {
       await docDao.add(doc);
 
       // add message to ocr queue
-      const queueServiceClient = QueueServiceClient.fromConnectionString(process.env.AZURE_STORAGE_OCR_CNNSTR!);
-      const queueClient = queueServiceClient.getQueueClient(process.env.QUEUE_DECLARATION_IN!);
+      const queueServiceClient = QueueServiceClient.fromConnectionString(appCfg.storageOcrCnnString);
+      const queueClient = queueServiceClient.getQueueClient(appCfg.queueDeclarationsInName);
       const msg: IQueueInput = {
         documentId: docId,
         type: params.type,
@@ -629,7 +630,7 @@ export class DocumentController {
         return;
       }
 
-      const sasUrl = generateSasUrl(process.env.AZURE_STORAGE_OCR_CNNSTR!, result.originalPath, 60);
+      const sasUrl = generateSasUrl(appConfig().storageOcrInfo, result.originalPath, 60);
       res.status(StatusCodes.OK).json({ url: sasUrl });
     } catch (ex) {
       logger.error(parseError(ex));
