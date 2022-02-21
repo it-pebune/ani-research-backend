@@ -1,8 +1,8 @@
 
 /* eslint-disable no-unused-vars */
 export enum DocumentType {
-  assetDeclaration = 0,
-  interestDeclaration = 1
+  assetDeclaration = 1,
+  interestDeclaration = 2
 }
 
 export enum DocumentVersion {

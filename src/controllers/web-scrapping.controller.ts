@@ -24,9 +24,18 @@ export class WebScrapController {
    * @apiPermission coordinator, reviewer, researcher
    * @apiDescription Get a list with all the MPs from a specified camera and legislature
    *
-   * @apiParam {Number} cam which chamber: 1 - Senators, 2 - Deputies, 3 - Both
+   * @apiParam {Number} cham which chamber: 1 - Senators, 2 - Deputies, 3 - Both
    * @apiParam {Number} leg the legislature e.g. 2020
    * @apiParam {Boolean} refresh true if the cache should be refreshed
+   *
+   * @apiSuccess {Number} legislature
+   * @apiSuccess {String} link url to get mp details
+   * @apiSuccess {Object[]} results List of mps
+   * @apiSuccess {Number} result.id MP id
+   * @apiSuccess {String} result.name
+   * @apiSuccess {String} result.party
+   * @apiSuccess {String} result.loc city of residence
+   * @apiSuccess {Number} result.cham which chamber 1 - Senate, 2 - Deputies
    *
    * @apiErrorExample Error-Response:
    * HTTP 1/1 406
@@ -52,8 +61,8 @@ export class WebScrapController {
         return;
       }
 
-      const requestSchema = Joi.object<{ cam: number; leg: number; refresh: boolean; }>({
-        cam: Joi.number().required(),
+      const requestSchema = Joi.object<{ cham: number; leg: number; refresh: boolean; }>({
+        cham: Joi.number().required(),
         leg: Joi.number().required(),
         refresh: Joi.boolean()
       });
@@ -67,7 +76,7 @@ export class WebScrapController {
       }
 
       const appCfg = appConfig();
-      const blobName = `mps-${params.leg}-${params.cam}.json`;
+      const blobName = `mps-${params.leg}-${params.cham}.json`;
       const blobService = BlobServiceClient.fromConnectionString(appCfg.storageGenCnnString);
       const containerClient = blobService.getContainerClient(appCfg.blobContainerGeneralPath);
       await containerClient.createIfNotExists();
@@ -86,7 +95,7 @@ export class WebScrapController {
       }
 
       const wsi = appCfg.webScrapApi;
-      const url = `${wsi.baseUrl}${wsi.getMPListUrl}?code=${wsi.key}&cam=${params.cam}&leg=${params.leg}`;
+      const url = `${wsi.baseUrl}${wsi.getMPListUrl}?code=${wsi.key}&cham=${params.cham}&leg=${params.leg}`;
       const data = await got(url).json<IWSMPListResponse>();
       if (data.results?.length) {
         logger.debug(data.results.length);
@@ -117,8 +126,12 @@ export class WebScrapController {
    * @apiDescription Get details for an MP
    *
    * @apiParam {Number} id mp id (from a previous call to api/webscrap/mps)
-   * @apiParam {Number} cam which chamber: 1 - Senators, 2 - Deputies
+   * @apiParam {Number} cham which chamber: 1 - Senators, 2 - Deputies
    * @apiParam {Number} leg the legislature e.g. 2020
+   *
+   * @apiSuccess {String} name
+   * @apiSuccess {String} photo
+   * @apiSuccess {String} dateOfBirth
    *
    * @apiErrorExample Error-Response:
    * HTTP 1/1 406
@@ -144,9 +157,9 @@ export class WebScrapController {
         return;
       }
 
-      const requestSchema = Joi.object<{ id: number; cam: number; leg: number; }>({
+      const requestSchema = Joi.object<{ id: number; cham: number; leg: number; }>({
         id: Joi.number().required(),
-        cam: Joi.number().required(),
+        cham: Joi.number().required(),
         leg: Joi.number().required()
       });
       const { value: params, error: verror } = requestSchema.validate(req.query);
@@ -161,7 +174,7 @@ export class WebScrapController {
       const appCfg = appConfig();
       const wsi = appCfg.webScrapApi;
       // eslint-disable-next-line max-len
-      const url = `${wsi.baseUrl}${wsi.getMPDetailsUrl}?code=${wsi.key}&id=${params.id}&cam=${params.cam}&leg=${params.leg}`;
+      const url = `${wsi.baseUrl}${wsi.getMPDetailsUrl}?code=${wsi.key}&id=${params.id}&cham=${params.cham}&leg=${params.leg}`;
       const data = await got(url).json();
       res.status(StatusCodes.OK).json(data);
     } catch (ex) {
@@ -183,6 +196,17 @@ export class WebScrapController {
    * @apiDescription Get assets and interests declarations for a specific person
    *
    * @apiParam {String} name
+   *
+   * @apiSuccess {Object[]} decls Array of declarations
+   * @apiSuccess {String} decl.name
+   * @apiSuccess {String} decl.institution cdep, senat
+   * @apiSuccess {String} decl.function
+   * @apiSuccess {String} decl.locality
+   * @apiSuccess {String} decl.county
+   * @apiSuccess {String} decl.date
+   * @apiSuccess {Number} decl.type 1 - asset declaration, 2 - interests declaration
+   * @apiSuccess {String} decl.link url from where the declaration was downloaded
+   * @apiSuccess {String} decl.uid
    *
    * @apiErrorExample Error-Response:
    * HTTP 1/1 406
@@ -223,7 +247,7 @@ export class WebScrapController {
       const appCfg = appConfig();
       const wsi = appCfg.webScrapApi;
       // eslint-disable-next-line max-len
-      const url = `${wsi.baseUrl}${wsi.getDeclarationsUrl}?code=${wsi.key}&nume_prenume=${params.name}`;
+      const url = `${wsi.baseUrl}${wsi.getDeclarationsUrl}?code=${wsi.key}&name=${params.name}`;
       const data = await got(url).json();
       res.status(StatusCodes.OK).json(data);
     } catch (ex) {
