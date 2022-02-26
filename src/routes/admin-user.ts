@@ -11,6 +11,9 @@ const ctrl = new AdminUserController();
 router.route('/')
   .all(adminUserPolicy.isAllowed.bind(adminUserPolicy))
   .get(ctrl.list.bind(ctrl));
+router.route('/role')
+  .all(adminUserPolicy.isAllowed.bind(adminUserPolicy))
+  .get(ctrl.listByRole.bind(ctrl));
 
 router.route('/:auserId')
   .all(adminUserPolicy.isAllowed.bind(adminUserPolicy))

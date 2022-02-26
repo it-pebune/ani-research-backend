@@ -26,6 +26,9 @@ class AdminUserPolicy implements IPolicy {
         resources: '/',
         permissions: '*'
       }, {
+        resources: '/role',
+        permissions: ['get']
+      }, {
         resources: '/:auserId',
         permissions: '*'
       }, {
@@ -37,6 +40,12 @@ class AdminUserPolicy implements IPolicy {
       }, {
         resources: '/:auserId/notes',
         permissions: '*'
+      }]
+    }, {
+      roles: [UserRole.coordinator],
+      allows: [{
+        resources: '/role',
+        permissions: ['get']
       }]
     }]);
   }

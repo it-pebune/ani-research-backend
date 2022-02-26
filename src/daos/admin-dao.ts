@@ -144,13 +144,29 @@ export class AdminDao {
   /**
    * Get user list
    * @param {boolean} deleted
-   * @return {Promise<IUserFull>}
+   * @return {Promise<IUser[]>}
    */
   public async list(deleted: boolean): Promise<IUser[]> {
     try {
       const result = await new SqlRequest(this.sql)
         .input('deleted', TYPES.TinyInt, deleted ? 1 : 0)
         .execute('adminUserList');
+      return result.recordset;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Get user by role list
+   * @param {UserRole} role
+   * @return {Promise<IUser[]>}
+   */
+  public async listByRole(role: UserRole): Promise<IUser[]> {
+    try {
+      const result = await new SqlRequest(this.sql)
+        .input('roleId', TYPES.TinyInt, role)
+        .execute('adminUserListByRole');
       return result.recordset;
     } catch (error) {
       throw error;

@@ -399,6 +399,62 @@ export class AdminUserController {
   }
 
   /**
+   * @api {get} /api/users/role List users with the specified role
+   * @apiName UserListByRole
+   * @apiGroup User Management
+   * @apiVersion 0.9.0
+   * @apiPermission admin, coordinator
+   * @apiDescription Get a list of users that have the specified role
+   *
+   * @apiParam {UserRole} role
+   *
+   * @apiSuccess {Object[]} users List of users
+   * @apiSuccess {Number} user.id User unique id
+   * @apiSuccess {Number} user.roleId Role id
+   * @apiSuccess {String} user.displayName
+   * @apiSuccess {String} user.email
+   *
+   * @apiUse UnknownError
+   *
+   */
+  /**
+   * @param {Request} req
+   * @param {Response} res
+   * @return {Promise<void>}
+   */
+  public async listByRole(req: Request, res: Response) {
+    // logger.debug('admin-user::listByRole');
+    try {
+      const loggedUser = getRequestUser(req);
+      if (!loggedUser) {
+        res.status(StatusCodes.UNAUTHORIZED).send();
+        return;
+      }
+
+      const requestSchema = Joi.object<{ role: number }>({
+        role: Joi.number().required()
+      });
+      const { value: params, error: verror } = requestSchema.validate(req.query);
+      if (verror || !params) {
+        logger.debug(verror?.details);
+        res.status(StatusCodes.BAD_REQUEST).json(
+          new ErrorResponse(ApiError.validation_error.withDetails(verror?.details))
+        );
+        return;
+      }
+
+      const sqlpool = await app.sqlPool;
+      const dao = new AdminDao(sqlpool);
+      const users = await dao.listByRole(params.role);
+
+      res.status(StatusCodes.OK).json(users);
+    } catch (ex) {
+      logger.error(parseError(ex));
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ErrorResponse(ApiError.internal_error));
+    }
+  }
+
+  /**
    * @param {Request} req
    * @param {Response} res
    * @param {NextFunction} next
