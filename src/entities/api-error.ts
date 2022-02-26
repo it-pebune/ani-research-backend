@@ -185,6 +185,11 @@ export class ApiError extends Error implements IApiError {
     return new ApiError(StatusCodes.NOT_FOUND,
       API_ERROR_CODES.DOCUMENT_NOT_FOUND, 'Document not found');
   }
+
+  public static get value_not_valid_role() {
+    return new ApiError(StatusCodes.NOT_ACCEPTABLE,
+      API_ERROR_CODES.NOT_VALID_ROLE, 'Value is not a valid role');
+  }
 }
 
 const API_ERROR_CODES = {
@@ -213,5 +218,6 @@ const API_ERROR_CODES = {
   REQUIRED_KEY: 'REQUIRED_KEY',
   REQUIRED_PARAMETER: 'REQUIRED_PARAMETER',
   UNKNOWN_SUBJECT: 'UNKNOWN_SUBJECT',
-  VALIDATION_ERROR: 'VALIDATION_ERROR'
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  NOT_VALID_ROLE: 'NOT_VALID_ROLE'
 };
