@@ -443,6 +443,11 @@ export class AdminUserController {
         return;
       }
 
+      if (!(params.role in UserRole)) {
+        res.status(StatusCodes.NOT_ACCEPTABLE).send(new ErrorResponse(ApiError.value_not_valid_role));
+        return;
+      }
+
       const sqlpool = await app.sqlPool;
       const dao = new AdminDao(sqlpool);
       const users = await dao.listByRole(params.role);
