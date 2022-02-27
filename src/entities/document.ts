@@ -47,3 +47,13 @@ export interface IQueueInput {
   ocrTableJsonFilename: string;
   ocrCustomJsonFilename: string;
 }
+
+enum OcrResult {
+  SUCCESS = 0,
+  ERROR
+  // TBD
+}
+
+export interface IQueueOutput extends IQueueInput {
+  error: OcrResult;
+}
