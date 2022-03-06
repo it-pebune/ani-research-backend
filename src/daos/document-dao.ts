@@ -134,6 +134,24 @@ export class DocumentDao {
 
   /**
    *
+   * @param {string} docId
+   * @param {string} data
+   */
+  public async updateDataRaw(docId: string, data: string): Promise<IProcedureResult<any>> {
+    try {
+      const sqlReq = new SqlRequest(this.sql)
+        .input('docId', sqlVarChar(MAX), docId)
+        .input('data', sqlVarChar(MAX), data);
+
+      const result = await sqlReq.execute('documentUpdateDataRaw');
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   *
    * @param {string} id
    */
   public async delete(id: string): Promise<IProcedureResult<any>> {

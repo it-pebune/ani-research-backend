@@ -48,7 +48,7 @@ export interface IQueueInput {
 }
 
 /* eslint-disable no-unused-vars */
-enum OcrResult {
+export enum OcrResult {
   SUCCESS = 0,
   ERROR
   // TBD

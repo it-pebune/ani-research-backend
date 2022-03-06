@@ -55,7 +55,7 @@ class App {
     initServerRolesPolicy();
     this.initJWT();
     this.initRoutes();
-    checkOCROutputQueue();
+    setTimeout(checkOCROutputQueue, 5_000);
     return this.app;
   }
 
