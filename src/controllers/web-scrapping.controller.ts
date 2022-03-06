@@ -9,8 +9,8 @@ import {
 import { ApiError, ErrorResponse } from '~entities';
 
 interface IWSMPListResponse {
-  action: string;
-  leg: string;
+  legislature: number;
+  profileUrl: string;
   results: any[];
 }
 
@@ -29,7 +29,7 @@ export class WebScrapController {
    * @apiParam {Boolean} refresh true if the cache should be refreshed
    *
    * @apiSuccess {Number} legislature
-   * @apiSuccess {String} link url to get mp details
+   * @apiSuccess {String} profileUrl url to get mp details
    * @apiSuccess {Object[]} results List of mps
    * @apiSuccess {Number} result.id MP id
    * @apiSuccess {String} result.name

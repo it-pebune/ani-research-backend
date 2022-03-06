@@ -22,6 +22,7 @@ import { ConnectionPool } from 'mssql';
 import router from './routes';
 import { IAuthTokenSubject } from './entities/auth.js';
 import { UserDao } from './daos/user-dao';
+import { checkOCROutputQueue } from './controllers/queue-watch.controller';
 
 const JWT_PROPERTY_NAME = 'vxmt_property_auth';
 
@@ -54,6 +55,7 @@ class App {
     initServerRolesPolicy();
     this.initJWT();
     this.initRoutes();
+    setTimeout(checkOCROutputQueue, 5_000);
     return this.app;
   }
 

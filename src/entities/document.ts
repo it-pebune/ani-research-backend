@@ -1,4 +1,3 @@
-
 /* eslint-disable no-unused-vars */
 export enum DocumentType {
   assetDeclaration = 1,
@@ -46,4 +45,16 @@ export interface IQueueInput {
   outPath: string;
   ocrTableJsonFilename: string;
   ocrCustomJsonFilename: string;
+}
+
+/* eslint-disable no-unused-vars */
+export enum OcrResult {
+  SUCCESS = 0,
+  ERROR
+  // TBD
+}
+/* eslint-enable no-unused-vars */
+
+export interface IQueueOutput extends IQueueInput {
+  error: OcrResult;
 }
