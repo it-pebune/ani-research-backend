@@ -9,7 +9,6 @@ GO
 CREATE PROCEDURE [dbo].subjectAdd(
   @uuid      VARCHAR(50),
   @firstName VARCHAR(100),
-  @middleName VARCHAR(50),
   @lastName VARCHAR(100),
   @dob DATE,
   @sirutaId INT,
@@ -20,8 +19,8 @@ AS
 BEGIN
   SET NOCOUNT ON
 
-  INSERT INTO [Subject](uuid, firstName, middleName, lastName, dob, sirutaId, notes)
-  VALUES (@uuid, @firstName, @middleName, @lastName, @dob, @sirutaId, @notes)
+  INSERT INTO [Subject](uuid, firstName, lastName, dob, sirutaId, notes)
+  VALUES (@uuid, @firstName, @lastName, @dob, @sirutaId, @notes)
 
   IF @@ERROR > 0
   BEGIN

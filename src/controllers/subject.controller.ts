@@ -16,7 +16,6 @@ import Joi from 'joi';
 
 interface ISubjectDTO {
   firstName: string;
-  middleName?: string;
   lastName: string;
   dob: Date;
   sirutaId: number;
@@ -112,7 +111,6 @@ export class SubjectController {
 
       const requestSchema = Joi.object<ISubjectDTO>({
         firstName: Joi.string().required(),
-        middleName: Joi.string(),
         lastName: Joi.string().required(),
         dob: Joi.date().required(),
         sirutaId: Joi.number().required()
@@ -130,7 +128,6 @@ export class SubjectController {
         id: 0,
         uuid: uuidv4(),
         firstName: params.firstName,
-        middleName: params.middleName,
         lastName: params.lastName,
         dob: params.dob,
         sirutaId: params.sirutaId,
@@ -195,7 +192,6 @@ export class SubjectController {
 
       const requestSchema = Joi.object<ISubjectDTO>({
         firstName: Joi.string().required(),
-        middleName: Joi.string(),
         lastName: Joi.string().required(),
         dob: Joi.date().required(),
         sirutaId: Joi.number().required()
@@ -210,7 +206,6 @@ export class SubjectController {
       }
 
       subject.firstName = params.firstName;
-      subject.middleName = params.middleName;
       subject.lastName = params.lastName;
       subject.dob = params.dob;
       subject.sirutaId = params.sirutaId;

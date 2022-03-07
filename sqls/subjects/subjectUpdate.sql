@@ -9,7 +9,6 @@ GO
 CREATE PROCEDURE [dbo].subjectUpdate(
   @id					  INT,
   @firstName		NVARCHAR(100),
-  @middleName		NVARCHAR(100),
   @lastName			NVARCHAR(100),
   @dob          DATE,
   @sirutaId     INT,
@@ -21,8 +20,7 @@ BEGIN
 
   UPDATE	[dbo].[Subject]
 	SET	firstName = @firstName,
-      middleName = @middleName,
-			lastName = @lastName,
+  		lastName = @lastName,
 			dob = @dob,
       sirutaID = @sirutaId,
       notes = @notes,
