@@ -11,7 +11,6 @@ export interface ISubject {
   id: number;
   uuid: string;
   firstName: string;
-  middleName?: string;
   lastName: string;
   dob: Date;
   sirutaId: number;

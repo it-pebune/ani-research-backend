@@ -7,7 +7,6 @@ interface ISubjectDTO {
   id: number;
   uuid: string;
   firstName: string;
-  middleName?: string;
   lastName: string;
   dob: Date;
   sirutaId: number;
@@ -58,7 +57,6 @@ export class SubjectDao {
       const sqlReq = new SqlRequest(this.sql)
         .input('uuid', sqlVarChar(50), subject.uuid)
         .input('firstName', sqlNVarChar(100), subject.firstName)
-        .input('middleName', sqlNVarChar(100), subject.middleName || null)
         .input('lastName', sqlNVarChar(100), subject.lastName)
         .input('dob', TYPES.Date, subject.dob)
         .input('sirutaId', TYPES.Int, subject.sirutaId)
@@ -80,7 +78,6 @@ export class SubjectDao {
       const sqlReq = new SqlRequest(this.sql)
         .input('id', TYPES.Int, subject.id)
         .input('firstName', sqlNVarChar(100), subject.firstName)
-        .input('middleName', sqlNVarChar(100), subject.middleName || null)
         .input('lastName', sqlNVarChar(100), subject.lastName)
         .input('dob', TYPES.Date, subject.dob)
         .input('sirutaId', TYPES.Int, subject.sirutaId);

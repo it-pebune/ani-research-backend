@@ -239,7 +239,6 @@ export class DocumentController {
   private getSubjectFolder(subject: ISubject): string {
     const parts: string[] = [
       ...subject.lastName.split(/[\s,\-]/),
-      ...(subject.middleName ? subject.middleName.split(/[\s,\-]/) : []),
       ...subject.firstName.split(/[\s,\-]/),
       subject.uuid
     ];
