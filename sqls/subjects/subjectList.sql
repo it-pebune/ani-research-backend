@@ -14,7 +14,7 @@ AS
 BEGIN
   SET NOCOUNT ON
 
-  SELECT  S.id, S.firstName, S.middleName, S.lastName, S.sirutaId, S.dob,
+  SELECT  S.id, S.firstName, S.lastName, S.sirutaId, S.dob, S.photoUrl,
           Ut.name city, Ut.countyId, C.name county, S.created, S.deleted,
           S.assignedTo assignedToId, U.displayName assignedTo, S.status
   FROM    [Subject] S
