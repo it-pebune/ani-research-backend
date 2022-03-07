@@ -85,7 +85,7 @@ export class WebScrapController {
         logger.debug('send from cache');
         const content = await blockBlobClient.downloadToBuffer();
         const data: IWSMPListResponse = JSON.parse(content.toString());
-        res.status(StatusCodes.OK).json(data.results);
+        res.status(StatusCodes.OK).json(data);
         return;
       }
 
@@ -102,7 +102,7 @@ export class WebScrapController {
         const content = Buffer.from(JSON.stringify(data));
         await blockBlobClient.upload(content, content.byteLength);
 
-        res.status(StatusCodes.OK).json(data.results);
+        res.status(StatusCodes.OK).json(data);
         return;
       }
 
