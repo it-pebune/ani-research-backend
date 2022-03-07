@@ -8,6 +8,7 @@ try {
   // Remove current build
   fs.removeSync('./dist/');
   // Copy front-end files
+  fs.copySync('./apidoc', './dist/apidoc');
   fs.copySync('./web.config', './dist/web.config');
   fs.copySync('./iisnode.yml', './dist/iisnode.yml');
   fs.copySync('./util/module-alias.js', './dist/index.js');
