@@ -79,6 +79,10 @@ class App {
       '/api/auth/google/signin'
     ];
 
+    if (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'development') {
+      exceptedPaths.push('/apidoc/index.html');
+    }
+
     this.app.use(expressJwt({
       algorithms: ['RS256'],
       secret: this.appCfg.authentication.public,
@@ -196,6 +200,7 @@ class App {
 
     this.app.use(helmet());
     this.app.use(helmet.frameguard({ action: 'DENY' }));
+
     if (this.appCfg.nodeEnv === 'development') {
       this.app.use(logger('dev'));
     } else {
@@ -233,6 +238,25 @@ class App {
     this.app.set('views', path.join(__dirname, 'templates'));
 
     this.app.use(express.static(path.join(__dirname, '../public')));
+    if (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'development') {
+      this.app.use(helmet.contentSecurityPolicy({
+        directives: {
+          defaultSrc: [
+            '\'self\''
+          ],
+          styleSrc: [
+            '\'self\'',
+            '\'unsafe-inline\''
+          ],
+          scriptSrc: [
+            '\'self\'',
+            '\'unsafe-inline\'',
+            '\'unsafe-eval\''
+          ]
+        }
+      }));
+      this.app.use(express.static(path.join(__dirname, '../apidoc')));
+    }
   }
 
   /**
