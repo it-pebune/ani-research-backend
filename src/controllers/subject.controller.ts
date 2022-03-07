@@ -424,6 +424,9 @@ export class SubjectController {
    * @apiSuccess {String} subject.county
    * @apiSuccess {Date} subject.created
    * @apiSuccess {Date} subject.updated
+   * @apiSuccess {Number} subject.assignedToId
+   * @apiSuccess {String} subject.assignedTo
+   * @apiSuccess {Number} subject.status 0 - assigned, 1 - research in progress, 2 - completed
    *
    * @apiUse UnknownError
    *
