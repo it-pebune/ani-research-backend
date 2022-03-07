@@ -12,6 +12,7 @@ export interface ISubject {
   uuid: string;
   firstName: string;
   lastName: string;
+  photoUrl: string;
   dob: Date;
   sirutaId: number;
   city: string;

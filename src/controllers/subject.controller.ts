@@ -17,6 +17,7 @@ import Joi from 'joi';
 interface ISubjectDTO {
   firstName: string;
   lastName: string;
+  photoUrl: string;
   dob: Date;
   sirutaId: number;
 }
@@ -43,13 +44,13 @@ export class SubjectController {
    * @apiSuccess {Object} subject Subject info
    * @apiSuccess {Number} subject.id Subject unique id
    * @apiSuccess {String} subject.firstName
-   * @apiSuccess {String} subject.middleName
    * @apiSuccess {String} subject.lastName
    * @apiSuccess {Date} subject.dob
    * @apiSuccess {number} subject.sirutaId
    * @apiSuccess {String} subject.city
    * @apiSuccess {String} subject.county
    * @apiSuccess {number} subject.countId
+   * @apiSuccess {String} subject.photoUrl
    * @apiSuccess {String} subject.notes
    * @apiSuccess {Date} subject.created
    * @apiSuccess {Date} subject.updated
@@ -80,8 +81,8 @@ export class SubjectController {
    * @apiDescription Adds a new subject
    *
    * @apiParam {String} firstName
-   * @apiParam {String} middleName
    * @apiParam {String} lastName
+   * @apiParam {String} photoUrl
    * @apiParam {Date} dob
    * @apiParam {Number} sirutaId
    *
@@ -112,6 +113,7 @@ export class SubjectController {
       const requestSchema = Joi.object<ISubjectDTO>({
         firstName: Joi.string().required(),
         lastName: Joi.string().required(),
+        photoUrl: Joi.string(),
         dob: Joi.date().required(),
         sirutaId: Joi.number().required()
       });
@@ -129,6 +131,7 @@ export class SubjectController {
         uuid: uuidv4(),
         firstName: params.firstName,
         lastName: params.lastName,
+        photoUrl: params.photoUrl,
         dob: params.dob,
         sirutaId: params.sirutaId,
         created: new Date()
@@ -155,8 +158,8 @@ export class SubjectController {
    * @apiDescription Update the specified subject
    *
    * @apiParam {String} firstName
-   * @apiParam {String} middleName
    * @apiParam {String} lastName
+   * @apiParam {String} photoUrl
    * @apiParam {Date} dob
    * @apiParam {Number} sirutaId
    *
@@ -193,6 +196,7 @@ export class SubjectController {
       const requestSchema = Joi.object<ISubjectDTO>({
         firstName: Joi.string().required(),
         lastName: Joi.string().required(),
+        photoUrl: Joi.string(),
         dob: Joi.date().required(),
         sirutaId: Joi.number().required()
       });
@@ -207,6 +211,7 @@ export class SubjectController {
 
       subject.firstName = params.firstName;
       subject.lastName = params.lastName;
+      subject.photoUrl = params.photoUrl;
       subject.dob = params.dob;
       subject.sirutaId = params.sirutaId;
 
@@ -411,8 +416,8 @@ export class SubjectController {
    * @apiSuccess {Number} subject.id User unique id
    * @apiSuccess {Number} subject.sirutaId UAT siruta number
    * @apiSuccess {String} subject.firstName
-   * @apiSuccess {String} subject.middleName
    * @apiSuccess {String} subject.lastName
+   * @apiSuccess {String} subject.photoUrl
    * @apiSuccess {Date} subject.dob
    * @apiSuccess {String} subject.city UAT name
    * @apiSuccess {Number} subject.countyId

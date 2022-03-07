@@ -8,6 +8,7 @@ interface ISubjectDTO {
   uuid: string;
   firstName: string;
   lastName: string;
+  photoUrl: string;
   dob: Date;
   sirutaId: number;
 }
@@ -58,6 +59,7 @@ export class SubjectDao {
         .input('uuid', sqlVarChar(50), subject.uuid)
         .input('firstName', sqlNVarChar(100), subject.firstName)
         .input('lastName', sqlNVarChar(100), subject.lastName)
+        .input('photoUrl', sqlNVarChar(MAX), subject.photoUrl)
         .input('dob', TYPES.Date, subject.dob)
         .input('sirutaId', TYPES.Int, subject.sirutaId)
         .output('subjectId', TYPES.Int);
@@ -79,6 +81,7 @@ export class SubjectDao {
         .input('id', TYPES.Int, subject.id)
         .input('firstName', sqlNVarChar(100), subject.firstName)
         .input('lastName', sqlNVarChar(100), subject.lastName)
+        .input('photoUrl', sqlNVarChar(MAX), subject.photoUrl)
         .input('dob', TYPES.Date, subject.dob)
         .input('sirutaId', TYPES.Int, subject.sirutaId);
 

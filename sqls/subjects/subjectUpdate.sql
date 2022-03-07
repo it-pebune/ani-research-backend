@@ -12,7 +12,8 @@ CREATE PROCEDURE [dbo].subjectUpdate(
   @lastName			NVARCHAR(100),
   @dob          DATE,
   @sirutaId     INT,
-  @notes varchar(MAX) = ''
+  @notes        VARCHAR(MAX) = '',
+  @photoUrl     VARCHAR(MAX) = ''
 )
 AS
 BEGIN
@@ -23,6 +24,7 @@ BEGIN
   		lastName = @lastName,
 			dob = @dob,
       sirutaID = @sirutaId,
+      photoUrl = @photoUrl,
       notes = @notes,
 			updated = GETDATE()
 	WHERE	id = @id
