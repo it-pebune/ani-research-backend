@@ -19,7 +19,7 @@ interface ISubjectDTO {
   lastName: string;
   photoUrl: string;
   dob: Date;
-  sirutaId: number;
+  sirutaId?: number;
 }
 
 interface ISubjectUpdateNotesDTO {
@@ -115,7 +115,7 @@ export class SubjectController {
         lastName: Joi.string().required(),
         photoUrl: Joi.string(),
         dob: Joi.date().required(),
-        sirutaId: Joi.number().required()
+        sirutaId: Joi.number()
       });
       const { value: params, error: verror } = requestSchema.validate(req.body);
       if (verror || !params) {
@@ -198,7 +198,7 @@ export class SubjectController {
         lastName: Joi.string().required(),
         photoUrl: Joi.string(),
         dob: Joi.date().required(),
-        sirutaId: Joi.number().required()
+        sirutaId: Joi.number()
       });
       const { value: params, error: verror } = requestSchema.validate(req.body);
       if (verror || !params) {
@@ -213,7 +213,7 @@ export class SubjectController {
       subject.lastName = params.lastName;
       subject.photoUrl = params.photoUrl;
       subject.dob = params.dob;
-      subject.sirutaId = params.sirutaId;
+      subject.sirutaId = params.sirutaId || 0;
 
       const sqlpool = await app.sqlPool;
       const dao = new SubjectDao(sqlpool);
