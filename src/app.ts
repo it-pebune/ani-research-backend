@@ -55,7 +55,9 @@ class App {
     initServerRolesPolicy();
     this.initJWT();
     this.initRoutes();
-    setTimeout(checkOCROutputQueue, 5_000);
+    if (this.appCfg.monitorOcrQueue) {
+      setTimeout(checkOCROutputQueue, 5_000);
+    }
     return this.app;
   }
 

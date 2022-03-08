@@ -24,6 +24,7 @@ export interface IAppConfig {
   googleClientInfo: IGoogleClientInfo;
   logTableName: string;
   logUITableName: string;
+  monitorOcrQueue: boolean;
   nodeEnv: string;
   port: string;
   queueDeclarationsInName: string;
@@ -73,6 +74,7 @@ export const appConfig = (refresh: boolean = false): IAppConfig => {
     googleClientInfo: gci.web,
     logTableName: getEnvVariable('LOG_TABLE_NAME'),
     logUITableName: getEnvVariable('LOGUI_TABLE_NAME'),
+    monitorOcrQueue: getEnvVariable('MONITOR_OCR_QUEUE') === 'true',
     nodeEnv: getEnvVariable('NODE_ENV'),
     port: getEnvVariable('PORT'),
     queueDeclarationsInName: getEnvVariable('QUEUE_DECLARATIONS_IN'),
