@@ -3,7 +3,11 @@
 export enum InstitutionType {
   public = 0,
   private = 1,
-  ngo = 2
+  ngo = 2,
+  university = 3,
+  highschool = 4,
+  senat = 254,
+  cdep = 255
 }
 
 /* eslint-enable no-unused-vars */
