@@ -11,7 +11,7 @@ CREATE PROCEDURE [dbo].subjectAdd(
   @firstName  VARCHAR(100),
   @lastName   VARCHAR(100),
   @dob        DATE,
-  @sirutaId   INT,
+  @sirutaId   INT = 0,
   @photoUrl   VARCHAR(MAX) = '',
   @notes      VARCHAR(MAX) = '',
   @subjectId  INT OUTPUT
@@ -19,6 +19,8 @@ CREATE PROCEDURE [dbo].subjectAdd(
 AS
 BEGIN
   SET NOCOUNT ON
+
+  IF @sirutaId = 0 SET @sirutaId = NULL
 
   INSERT INTO [Subject](uuid, firstName, lastName, dob, sirutaId, photoUrl, notes)
   VALUES (@uuid, @firstName, @lastName, @dob, @sirutaId, @photoUrl, @notes)

@@ -11,13 +11,15 @@ CREATE PROCEDURE [dbo].subjectUpdate(
   @firstName		NVARCHAR(100),
   @lastName			NVARCHAR(100),
   @dob          DATE,
-  @sirutaId     INT,
+  @sirutaId     INT = 0,
   @notes        VARCHAR(MAX) = '',
   @photoUrl     VARCHAR(MAX) = ''
 )
 AS
 BEGIN
   SET NOCOUNT ON
+
+  IF @sirutaId = 0 SET @sirutaId = NULL
 
   UPDATE	[dbo].[Subject]
 	SET	firstName = @firstName,

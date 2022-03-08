@@ -10,7 +10,7 @@ interface ISubjectDTO {
   lastName: string;
   photoUrl: string;
   dob: Date;
-  sirutaId: number;
+  sirutaId?: number;
 }
 
 interface ISubjectAssignDTO {
@@ -61,7 +61,7 @@ export class SubjectDao {
         .input('lastName', sqlNVarChar(100), subject.lastName)
         .input('photoUrl', sqlNVarChar(MAX), subject.photoUrl)
         .input('dob', TYPES.Date, subject.dob)
-        .input('sirutaId', TYPES.Int, subject.sirutaId)
+        .input('sirutaId', TYPES.Int, subject.sirutaId || 0)
         .output('subjectId', TYPES.Int);
 
       const result = await sqlReq.execute('subjectAdd');
@@ -83,7 +83,7 @@ export class SubjectDao {
         .input('lastName', sqlNVarChar(100), subject.lastName)
         .input('photoUrl', sqlNVarChar(MAX), subject.photoUrl)
         .input('dob', TYPES.Date, subject.dob)
-        .input('sirutaId', TYPES.Int, subject.sirutaId);
+        .input('sirutaId', TYPES.Int, subject.sirutaId || 0);
 
       const result = await sqlReq.execute('subjectUpdate');
       return result;
