@@ -15,9 +15,9 @@ BEGIN
           Ut.name city, Ut.countyId, C.name county, S.created, S.updated, S.deleted,
           S.assignedTo assignedToId, U.displayName assignedTo, S.status
   FROM    [Subject] S
-          INNER JOIN
+          LEFT JOIN
           Uat Ut ON S.sirutaId = Ut.sirutaId
-          INNER JOIN
+          LEFT JOIN
           County C ON Ut.countyId = C.id
           LEFT JOIN
           [User] U ON S.assignedTo = U.id
