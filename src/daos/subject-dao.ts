@@ -168,7 +168,7 @@ export class SubjectDao {
   public async assign(params: ISubjectAssignDTO) : Promise<IProcedureResult<any>> {
     try {
       const result = await new SqlRequest(this.sql)
-        .input('id', TYPES.Int, params.id)
+        .input('subjectId', TYPES.Int, params.id)
         .input('userId', TYPES.Int, params.userId)
         .input('assignedBy', TYPES.Int, params.assignedBy)
         .input('status', TYPES.TinyInt, params.status)
