@@ -195,8 +195,8 @@ export class DocumentController {
         path: `${subjFolder}/${declFolder}`,
         filename: fileName,
         outPath: `${subjFolder}/${declFolder}`,
-        ocrTableJsonFilename: `${fileName}-table`,
-        ocrCustomJsonFilename: `${fileName}-custom`
+        ocrTableJsonFilename: `${fileName}-table.json`,
+        ocrCustomJsonFilename: `${fileName}-custom.json`
       };
       logger.debug(msg);
       const sendMessageResponse = await queueClient.sendMessage(JSON.stringify(msg));
