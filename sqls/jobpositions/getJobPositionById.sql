@@ -13,7 +13,8 @@ AS
 BEGIN
   SET NOCOUNT ON
 
-  SELECT  J.id, J.name, J.institutionId, I.name institution, J.sirutaId, U.name uat, dateStart, dateEnd, aditionalInfo
+  SELECT  J.id, J.name, J.institutionId, I.name institution, J.sirutaId, U.name uat,
+          J.dateStart, J.dateEnd, J.aditionalInfo
   FROM    JobPosition J
           INNER JOIN
           Institution I ON J.institutionId = I.id
