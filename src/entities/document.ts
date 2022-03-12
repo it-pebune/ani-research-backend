@@ -35,6 +35,15 @@ export interface IDocument {
   updatedByName?: string;
 }
 
+/* eslint-disable no-unused-vars */
+export enum OcrResult {
+  SUCCESS = 0,
+  ERROR
+  // TBD
+}
+/* eslint-enable no-unused-vars */
+
+
 export interface IQueueInput {
   documentId: string;
   type: DocumentType;
@@ -47,14 +56,19 @@ export interface IQueueInput {
   ocrCustomJsonFilename: string;
 }
 
-/* eslint-disable no-unused-vars */
-export enum OcrResult {
-  SUCCESS = 0,
-  ERROR
-  // TBD
+// TBD
+export interface IOcrError {
+  [key: string]: string;
 }
-/* eslint-enable no-unused-vars */
+
+export interface IOcrMessage {
+  title: string;
+  value: string;
+  comments?: string;
+}
 
 export interface IQueueOutput extends IQueueInput {
-  error: OcrResult;
+  messageId: string;
+  messages: IOcrMessage[];
+  errors: IOcrError[];
 }

@@ -2,7 +2,7 @@ import {
   appConfig, logger, parseError, streamToBuffer
 } from '~shared';
 import { DequeuedMessageItem, QueueClient, QueueServiceClient } from '@azure/storage-queue';
-import { IQueueOutput, OcrResult } from '~entities';
+import { IQueueOutput } from '~entities';
 import app from '~app';
 import { DocumentDao } from '~daos';
 import { ShareServiceClient } from '@azure/storage-file-share';
@@ -45,7 +45,9 @@ async function processDocument(queueClient: QueueClient, item: DequeuedMessageIt
     logger.debug(item);
     const doc = JSON.parse(item.messageText) as IQueueOutput;
     logger.debug(doc);
-    if (doc.error !== OcrResult.SUCCESS) {
+    if (doc.errors.length > 0) {
+      logger.error(doc.errors);
+      await queueClient.deleteMessage(item.messageId, item.popReceipt);
       return;
     }
 
@@ -54,6 +56,11 @@ async function processDocument(queueClient: QueueClient, item: DequeuedMessageIt
     const shareClient = shareServiceClient.getShareClient(appCfg.shareDeclarations);
     const declFolderClient = shareClient.getDirectoryClient(doc.outPath);
     const fileClient = declFolderClient.getFileClient(doc.ocrCustomJsonFilename);
+    if (!await fileClient.exists()) {
+      logger.error(`output file does not exists ${doc.outPath} ${doc.ocrCustomJsonFilename}`);
+      await queueClient.deleteMessage(item.messageId, item.popReceipt);
+      return;
+    }
     const downloadFileResponse = await fileClient.download();
     if (!downloadFileResponse.readableStreamBody) {
       return;

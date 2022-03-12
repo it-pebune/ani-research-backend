@@ -1,6 +1,6 @@
 {
   "name": "main-apis",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .ts .",
@@ -83,7 +83,7 @@
     "typescript": "^4.5.5"
   },
   "apidoc": {
-    "name": "ANI / BUNE - Research REST API",
+    "name": "IntegRes REST API",
     "version": "0.9.0",
     "url": "https://ani-research-api-qa.azurewebsites.net"
   }
