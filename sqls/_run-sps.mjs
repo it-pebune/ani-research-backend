@@ -46,8 +46,8 @@ const servers = [
   {
     ...serverBase,
     name: 'rpb_dev',
-    server: 'sql-rpb.database.windows.net',
-    database: 'rpb'
+    server: 'sql-integres-qa.database.windows.net',
+    database: 'sqldb-integres-qa'
   }
 ];
 
@@ -61,33 +61,59 @@ if (false) {
 
 const previouslyModifiedFiles = [
   // 'sqls/changes.sql',
-  'sqls/documents/documentAdd.sql',
-  'sqls/documents/documentUpdate.sql',
-  'sqls/documents/documentDelete.sql',
-  'sqls/documents/documentExists.sql',
-  'sqls/documents/documentList.sql',
-  'sqls/documents/getDocumentById.sql',
-  'sqls/documents/getDocumentData.sql',
-  'sqls/documents/documentUpdateData.sql',
-  'sqls/documents/getDocumentDataRaw.sql',
-  'sqls/documents/getDocumentOriginalPath.sql'
-  // 'sqls/subjects/getSubjectById.sql',
-  // 'sqls/subjects/subjectList.sql',
-  // 'sqls/subjects/subjectAdd.sql',
-  // 'sqls/subjects/subjectUpdate.sql'
+  // 'sqls/documents/documentAdd.sql',
+  // 'sqls/documents/documentDelete.sql',
+  // 'sqls/documents/documentExists.sql',
+  // 'sqls/documents/documentList.sql',
+  // 'sqls/documents/documentUpdate.sql',
+  // 'sqls/documents/documentUpdateData.sql',
+  // 'sqls/documents/getDocumentDataRaw.sql',
+  // 'sqls/documents/getDocumentById.sql',
+  // 'sqls/documents/getDocumentData.sql',
+  // 'sqls/documents/getDocumentDataRaw.sql',
+  // 'sqls/documents/getDocumentOriginalPath.sql',
+
+  // 'sqls/institutions/getInstitutionById.sql',
+  // 'sqls/institutions/institutionAdd.sql',
+  // 'sqls/institutions/institutionDelete.sql',
+  // 'sqls/institutions/institutionList.sql',
+  // 'sqls/institutions/institutionUpdate.sql',
+
+  // 'sqls/jobpositions/getJobPositionById.sql',
+  // 'sqls/jobpositions/jobposAdd.sql',
+  // 'sqls/jobpositions/jobposDelete.sql',
+  // 'sqls/jobpositions/jobposList.sql',
+  // 'sqls/jobpositions/jobposUpdate.sql',
+
   // 'sqls/login/didLogin.sql',
   // 'sqls/login/didLogout.sql',
+
+  // 'sqls/subjects/getSubjectAssignedHistory.sql',
+  // 'sqls/subjects/getSubjectById.sql',
+  // 'sqls/subjects/subjectAdd.sql',
+  // 'sqls/subjects/subjectAssign.sql',
+  // 'sqls/subjects/subjectDelete.sql',
+  // 'sqls/subjects/subjectList.sql',
+  // 'sqls/subjects/subjectUpdate.sql',
+
+  // 'sqls/uat/getCounties.sql',
+  // 'sqls/uat/getUats.sql',
+
+  // 'sqls/users/adminUserAdd.sql',
+  // 'sqls/users/adminUserDelete.sql',
+  // 'sqls/users/adminUserList.sql',
+  // 'sqls/users/adminUserListByRole.sql',
+  // 'sqls/users/adminUserUpdate.sql',
+  // 'sqls/users/adminUserUpdateNotes.sql',
+  // 'sqls/users/adminUserUpdateStatus.sql',
   // 'sqls/users/deserializeUser.sql',
   // 'sqls/users/getUserByEmail.sql',
   // 'sqls/users/getUserByGoogleId.sql',
   // 'sqls/users/getUserById.sql',
   // 'sqls/users/getUserByRefreshToken.sql',
-  // 'sqls/users/adminUserAdd.sql',
-  // 'sqls/users/adminUserDelete.sql',
-  // 'sqls/users/adminUserList.sql',
-  // 'sqls/users/adminUserUpdate.sql',
-  // 'sqls/users/adminUserUpdateStatus.sql',
-  // 'sqls/users/userUpdate.sql'
+  // 'sqls/users/userDelete.sql',
+  // 'sqls/users/userUpdate.sql',
+  // 'sqls/users/userUpdateProviderData.sql'
 ];
 
 /**

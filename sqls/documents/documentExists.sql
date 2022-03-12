@@ -16,7 +16,7 @@ BEGIN
 
   SELECT  D.id, D.type, D.status, D.name, D.md5, D.downloadedUrl, D.originalPath,
           D.created, D.createdBy, Uc.displayName createdByName, D.updated, D.updatedBy,
-          Uu.displayName updatedByName, D.subjectId, S.firstName, S.middleName, S.lastName
+          Uu.displayName updatedByName, D.subjectId, S.firstName, S.lastName
   FROM    [Document] D
           INNER JOIN
           [Subject] S ON D.subjectId = S.id
