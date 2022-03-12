@@ -78,7 +78,7 @@ export class WebScrapController {
       const appCfg = appConfig();
       const blobName = `mps-${params.leg}-${params.cham}.json`;
       const blobService = BlobServiceClient.fromConnectionString(appCfg.storageGenCnnString);
-      const containerClient = blobService.getContainerClient(appCfg.blobContainerGeneralPath);
+      const containerClient = blobService.getContainerClient(appCfg.blobMPsCachePath);
       await containerClient.createIfNotExists();
       const blockBlobClient = containerClient.getBlockBlobClient(blobName);
       if (!params.refresh && await blockBlobClient.exists()) {
