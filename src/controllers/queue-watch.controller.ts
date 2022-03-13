@@ -2,7 +2,7 @@ import {
   appConfig, logger, parseError, streamToBuffer
 } from '~shared';
 import { DequeuedMessageItem, QueueClient, QueueServiceClient } from '@azure/storage-queue';
-import { IQueueOutput } from '~entities';
+import { DocumentStatus, IQueueOutput } from '~entities';
 import app from '~app';
 import { DocumentDao } from '~daos';
 import { ShareServiceClient } from '@azure/storage-file-share';
@@ -45,9 +45,14 @@ async function processDocument(queueClient: QueueClient, item: DequeuedMessageIt
     logger.debug(item);
     const doc = JSON.parse(item.messageText) as IQueueOutput;
     logger.debug(doc);
+
+    const sqlpool = await app.sqlPool;
+    const dao = new DocumentDao(sqlpool);
+
     if (doc.errors.length > 0) {
       logger.error(doc.errors);
       await queueClient.deleteMessage(item.messageId, item.popReceipt);
+      await dao.updateDataRaw(doc.documentId, DocumentStatus.ocrError);
       return;
     }
 
@@ -59,18 +64,20 @@ async function processDocument(queueClient: QueueClient, item: DequeuedMessageIt
     if (!await fileClient.exists()) {
       logger.error(`output file does not exists ${doc.outPath} ${doc.ocrCustomJsonFilename}`);
       await queueClient.deleteMessage(item.messageId, item.popReceipt);
+      await dao.updateDataRaw(doc.documentId, DocumentStatus.ocrOutputNotFound);
       return;
     }
     const downloadFileResponse = await fileClient.download();
     if (!downloadFileResponse.readableStreamBody) {
+      logger.error('download error');
+      await queueClient.deleteMessage(item.messageId, item.popReceipt);
+      await dao.updateDataRaw(doc.documentId, DocumentStatus.ocrOutputDownloadError);
       return;
     }
     const content = (await streamToBuffer(downloadFileResponse.readableStreamBody)).toString();
     logger.debug(content);
 
-    const sqlpool = await app.sqlPool;
-    const dao = new DocumentDao(sqlpool);
-    await dao.updateDataRaw(doc.documentId, content);
+    await dao.updateDataRaw(doc.documentId, DocumentStatus.ocrCompleted, content);
 
     await queueClient.deleteMessage(item.messageId, item.popReceipt);
   } catch (ex) {

@@ -124,6 +124,10 @@ export class DocumentController {
         return;
       }
 
+      if (params.name) {
+        params.name = encodeURIComponent(params.name);
+      }
+
       const appCfg = appConfig();
 
       // download file and calculate hash
@@ -199,8 +203,15 @@ export class DocumentController {
         ocrCustomJsonFilename: `${fileName}-custom.json`
       };
       logger.debug(msg);
-      const sendMessageResponse = await queueClient.sendMessage(JSON.stringify(msg));
-      logger.debug(sendMessageResponse);
+      const sendResp = await queueClient.sendMessage(JSON.stringify(msg));
+      logger.debug({
+        requestId: sendResp.requestId,
+        clientRequestId: sendResp.clientRequestId,
+        version: sendResp.version,
+        errorCode: sendResp.errorCode,
+        messageId: sendResp.messageId,
+        popReceipt: sendResp.popReceipt
+      });
 
       res.status(StatusCodes.OK).send();
     } catch (ex) {
@@ -223,11 +234,11 @@ export class DocumentController {
     const re2 = /.+fileName=(?<filename>.+)&.*/i;
     let result = url.match(re2);
     if (result?.groups) {
-      return `${result.groups['filename']}-${documentId}`;
+      return `${encodeURIComponent(result.groups['filename'])}-${documentId}`;
     }
     result = url.match(re1);
     if (result?.groups) {
-      return `${result.groups['filename']}-${documentId}`;
+      return `${encodeURIComponent(result.groups['filename'])}-${documentId}`;
     }
     return documentId;
   }
