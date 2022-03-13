@@ -124,10 +124,6 @@ export class DocumentController {
         return;
       }
 
-      if (params.name) {
-        params.name = encodeURIComponent(params.name);
-      }
-
       const appCfg = appConfig();
 
       // download file and calculate hash
@@ -158,7 +154,7 @@ export class DocumentController {
       const subjFolder = this.getSubjectFolder(subj);
       const declFolder = params.type === DocumentType.assetDeclaration ? 'DA' : 'DI';
       const docId = uuidv4();
-      const fileName = (params.name ? `${params.name}-${docId}` : false) || this.getFilename(params.downloadUrl, docId);
+      const fileName = docId;
       // eslint-disable-next-line max-len
       const originalPath = `${appCfg.storageOcrInfo.fileEndpoint}/${appCfg.shareDeclarations}/${subjFolder}/${declFolder}/${fileName}`;
 
@@ -234,11 +230,11 @@ export class DocumentController {
     const re2 = /.+fileName=(?<filename>.+)&.*/i;
     let result = url.match(re2);
     if (result?.groups) {
-      return `${encodeURIComponent(result.groups['filename'])}-${documentId}`;
+      return `${result.groups['filename']}-${documentId}`;
     }
     result = url.match(re1);
     if (result?.groups) {
-      return `${encodeURIComponent(result.groups['filename'])}-${documentId}`;
+      return `${result.groups['filename']}-${documentId}`;
     }
     return documentId;
   }
