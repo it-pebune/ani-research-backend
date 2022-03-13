@@ -12,7 +12,10 @@ export enum DocumentVersion {
 export enum DocumentStatus {
   waitingOCR = 0,
   ocrCompleted = 1,
-  validated = 2
+  ocrError,
+  ocrOutputNotFound,
+  ocrOutputDownloadError,
+  validated
 }
 /* eslint-enable no-unused-vars */
 
@@ -56,9 +59,9 @@ export interface IQueueInput {
   ocrCustomJsonFilename: string;
 }
 
-// TBD
 export interface IOcrError {
-  [key: string]: string;
+  title: string;
+  value: string;
 }
 
 export interface IOcrMessage {
@@ -68,7 +71,7 @@ export interface IOcrMessage {
 }
 
 export interface IQueueOutput extends IQueueInput {
-  messageId: string;
+  messageid: string;
   messages: IOcrMessage[];
   errors: IOcrError[];
 }

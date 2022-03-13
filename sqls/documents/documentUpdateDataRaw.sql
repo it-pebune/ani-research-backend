@@ -8,7 +8,8 @@ GO
 
 CREATE PROCEDURE [dbo].documentUpdateDataRaw(
   @docId  VARCHAR(50),
-  @data   VARCHAR(MAX)
+  @status TINYINT,
+  @data   VARCHAR(MAX) = NULL
 )
 AS
 BEGIN
@@ -16,6 +17,7 @@ BEGIN
 
   UPDATE  Document
   SET     [dataRaw] = @data,
+          [status] = @status,
           updated = GETDATE()
   WHERE   id = @docId
 END

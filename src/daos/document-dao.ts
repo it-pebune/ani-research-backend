@@ -135,12 +135,14 @@ export class DocumentDao {
   /**
    *
    * @param {string} docId
+   * @param {DocumentStatus} status
    * @param {string} data
    */
-  public async updateDataRaw(docId: string, data: string): Promise<IProcedureResult<any>> {
+  public async updateDataRaw(docId: string, status: DocumentStatus, data?: string): Promise<IProcedureResult<any>> {
     try {
       const sqlReq = new SqlRequest(this.sql)
         .input('docId', sqlVarChar(MAX), docId)
+        .input('status', TYPES.TinyInt, status)
         .input('data', sqlVarChar(MAX), data);
 
       const result = await sqlReq.execute('documentUpdateDataRaw');
