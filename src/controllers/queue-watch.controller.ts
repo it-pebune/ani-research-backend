@@ -15,7 +15,7 @@ let _timeoutHandler: NodeJS.Timeout | null;
  * Checks for finsihed OCR processed documents
  */
 export async function checkOCROutputQueue(): Promise<void> {
-  logger.debug('checking for OCR output messages...');
+  // logger.debug('checking for OCR output messages...');
   const appCfg = appConfig();
   const queueServiceClient = QueueServiceClient.fromConnectionString(appCfg.storageOcrCnnString);
   const queueClient = queueServiceClient.getQueueClient(appCfg.queueDeclarationsOutName);
