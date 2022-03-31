@@ -68,6 +68,7 @@ export class UserController {
       const userInfo: IUserFull = await userDao.deserializeUser(user.id);
       if (userInfo) {
         const u = {
+          id: userInfo.id,
           firstName: userInfo.firstName,
           lastName: userInfo.lastName,
           displayName: userInfo.displayName,
