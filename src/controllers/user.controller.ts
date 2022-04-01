@@ -31,12 +31,14 @@ export class UserController {
    * @apiDescription Get details of the logged in user
    *
    * @apiSuccess {Object} user User info
+   * @apiSuccess {Number} user.id
    * @apiSuccess {String} user.firstName
    * @apiSuccess {String} user.lastName
    * @apiSuccess {String} user.displayName
    * @apiSuccess {String} user.email
    * @apiSuccess {String} user.phone
    * @apiSuccess {String} user.socialInfo
+   * @apiSuccess {*} user.settings
    *
    * @apiErrorExample Error-Response:
    * HTTP 1/1 404
@@ -103,12 +105,14 @@ export class UserController {
    * @apiParam {string} socialInfo
    *
    * @apiSuccess {Object} user User info
+   * @apiSuccess {Number} user.id
    * @apiSuccess {String} user.firstName
    * @apiSuccess {String} user.lastName
    * @apiSuccess {String} user.displayName
    * @apiSuccess {String} user.email
    * @apiSuccess {String} user.phone
    * @apiSuccess {String} user.socialInfo
+   * @apiSuccess {*} user.settings
    *
    * @apiErrorExample Error-Response:
    * HTTP 1/1 406
@@ -160,12 +164,22 @@ export class UserController {
         phone: params.phone || '',
         socialInfo: params.socialInfo || ''
       };
+      const dao = new UserDao(await app.sqlPool);
 
-      const sqlpool = await app.sqlPool;
-      const dao = new UserDao(sqlpool);
       await dao.update(u);
 
-      res.status(StatusCodes.OK).json({});
+      const userInfo: IUserFull = await dao.deserializeUser(user.id);
+
+      res.status(StatusCodes.OK).json({
+        id: userInfo.id,
+        firstName: userInfo.firstName,
+        lastName: userInfo.lastName,
+        displayName: userInfo.displayName,
+        email: userInfo.email,
+        phone: userInfo.phone,
+        socialInfo: userInfo.socialInfo,
+        settings: userInfo.settings,
+      });
     } catch (ex) {
       logger.error(parseError(ex));
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ErrorResponse(ApiError.internal_error));
