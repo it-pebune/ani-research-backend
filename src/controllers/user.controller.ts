@@ -38,7 +38,7 @@ export class UserController {
    * @apiSuccess {String} user.email
    * @apiSuccess {String} user.phone
    * @apiSuccess {String} user.socialInfo
-   * @apiSuccess {*} user.settings
+   * @apiSuccess {Object} user.settings
    *
    * @apiErrorExample Error-Response:
    * HTTP 1/1 404
@@ -112,7 +112,7 @@ export class UserController {
    * @apiSuccess {String} user.email
    * @apiSuccess {String} user.phone
    * @apiSuccess {String} user.socialInfo
-   * @apiSuccess {*} user.settings
+   * @apiSuccess {Object} user.settings
    *
    * @apiErrorExample Error-Response:
    * HTTP 1/1 406
@@ -178,7 +178,7 @@ export class UserController {
         email: userInfo.email,
         phone: userInfo.phone,
         socialInfo: userInfo.socialInfo,
-        settings: userInfo.settings,
+        settings: userInfo.settings
       });
     } catch (ex) {
       logger.error(parseError(ex));
