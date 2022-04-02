@@ -36,9 +36,11 @@ export class UserController {
    * @apiSuccess {String} user.lastName
    * @apiSuccess {String} user.displayName
    * @apiSuccess {String} user.email
-   * @apiSuccess {String} user.phone
    * @apiSuccess {String} user.socialInfo
+   * @apiSuccess {String} user.phone
    * @apiSuccess {Object} user.settings
+   * @apiSuccess {String} user.profileImageUrl
+   * @apiSuccess {Array} user.roles
    *
    * @apiErrorExample Error-Response:
    * HTTP 1/1 404
@@ -75,9 +77,11 @@ export class UserController {
           lastName: userInfo.lastName,
           displayName: userInfo.displayName,
           email: userInfo.email,
-          phone: userInfo.phone,
           socialInfo: userInfo.socialInfo,
-          settings: userInfo.settings
+          phone: userInfo.phone,
+          settings: userInfo.settings,
+          profileImageUrl: userInfo.profileImageUrl,
+          roles: userInfo.roles
         };
 
         res.status(StatusCodes.OK).json(u);
@@ -110,9 +114,11 @@ export class UserController {
    * @apiSuccess {String} user.lastName
    * @apiSuccess {String} user.displayName
    * @apiSuccess {String} user.email
-   * @apiSuccess {String} user.phone
    * @apiSuccess {String} user.socialInfo
+   * @apiSuccess {String} user.phone
    * @apiSuccess {Object} user.settings
+   * @apiSuccess {String} user.profileImageUrl
+   * @apiSuccess {Array} user.roles
    *
    * @apiErrorExample Error-Response:
    * HTTP 1/1 406
@@ -176,9 +182,11 @@ export class UserController {
         lastName: userInfo.lastName,
         displayName: userInfo.displayName,
         email: userInfo.email,
-        phone: userInfo.phone,
         socialInfo: userInfo.socialInfo,
-        settings: userInfo.settings
+        phone: userInfo.phone,
+        settings: userInfo.settings,
+        profileImageUrl: userInfo.profileImageUrl,
+        roles: userInfo.roles
       });
     } catch (ex) {
       logger.error(parseError(ex));
