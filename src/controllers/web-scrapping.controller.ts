@@ -175,11 +175,19 @@ export class WebScrapController {
       const wsi = appCfg.webScrapApi;
       // eslint-disable-next-line max-len
       const url = `${wsi.baseUrl}${wsi.getMPDetailsUrl}?code=${wsi.key}&id=${params.id}&cham=${params.cham}&leg=${params.leg}`;
-      const data = await got(url).json();
+      const data = await got(url, {
+        timeout: {
+          request: 30000
+        }
+      }).json();
       res.status(StatusCodes.OK).json(data);
     } catch (ex) {
       if (ex instanceof ApiError) {
         res.status(ex.statusCode).json(new ErrorResponse(ex));
+      } else if ((ex as Error).name === 'TimeoutError') {
+        logger.error(parseError(ex));
+        logger.debug(ex);
+        res.status(StatusCodes.REQUEST_TIMEOUT).send();
       } else {
         logger.error(parseError(ex));
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ErrorResponse(ApiError.internal_error));
@@ -231,6 +239,7 @@ export class WebScrapController {
         res.status(StatusCodes.UNAUTHORIZED).send();
         return;
       }
+      logger.debug(`webscrap::decls ${req.query.name}`);
 
       const requestSchema = Joi.object<{ name: string; }>({
         name: Joi.string().required()
@@ -246,13 +255,22 @@ export class WebScrapController {
 
       const appCfg = appConfig();
       const wsi = appCfg.webScrapApi;
+      // params.name = encodeURIComponent(params.name);
       // eslint-disable-next-line max-len
       const url = `${wsi.baseUrl}${wsi.getDeclarationsUrl}?code=${wsi.key}&name=${params.name}`;
-      const data = await got(url).json();
+      const data = await got(url, {
+        timeout: {
+          request: 30000
+        }
+      }).json();
       res.status(StatusCodes.OK).json(data);
     } catch (ex) {
       if (ex instanceof ApiError) {
         res.status(ex.statusCode).json(new ErrorResponse(ex));
+      } else if ((ex as Error).name === 'TimeoutError') {
+        logger.error(parseError(ex));
+        logger.debug(ex);
+        res.status(StatusCodes.REQUEST_TIMEOUT).send();
       } else {
         logger.error(parseError(ex));
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ErrorResponse(ApiError.internal_error));
