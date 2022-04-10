@@ -300,7 +300,7 @@ export class JobPositionController {
       const requestSchema = Joi.object<{ subjectId: number }>({
         subjectId: Joi.number().required()
       });
-      const { value: params, error: verror } = requestSchema.validate(req.body);
+      const { value: params, error: verror } = requestSchema.validate(req.query);
       if (verror || !params) {
         logger.debug(verror?.details);
         res.status(StatusCodes.BAD_REQUEST).json(
