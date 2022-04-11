@@ -452,6 +452,7 @@ export class DocumentController {
    * @apiSuccess {String} doc.id Document unique id
    * @apiSuccess {String} doc.name
    * @apiSuccess {String} doc.md5
+   * @apiSuccess {DocumentType} doc.type
    * @apiSuccess {String} doc.downloadedUrl
    * @apiSuccess {String} doc.originalPath
    * @apiSuccess {Date}   doc.created
@@ -478,7 +479,7 @@ export class DocumentController {
       const requestSchema = Joi.object<{ subjectId: number }>({
         subjectId: Joi.number().required()
       });
-      const { value: params, error: verror } = requestSchema.validate(req.body);
+      const { value: params, error: verror } = requestSchema.validate(req.query);
       if (verror || !params) {
         logger.debug(verror?.details);
         res.status(StatusCodes.BAD_REQUEST).json(
