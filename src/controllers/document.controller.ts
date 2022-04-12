@@ -451,6 +451,9 @@ export class DocumentController {
    * @apiSuccess {Object[]} docs List of subject' documents
    * @apiSuccess {String} doc.id Document unique id
    * @apiSuccess {String} doc.name
+   * @apiSuccess {Date} doc.date
+   * @apiSuccess {Number} doc.jobId
+   * @apiSuccess {String} doc.jobPosition
    * @apiSuccess {String} doc.md5
    * @apiSuccess {DocumentType} doc.type
    * @apiSuccess {String} doc.downloadedUrl
