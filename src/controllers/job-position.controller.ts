@@ -77,6 +77,17 @@ export class JobPositionController {
    * @apiParam {Date} dateEnd
    * @apiParam {String} info
    *
+   * @apiSuccess {Object} job JobPosition info
+   * @apiSuccess {Number} job.id JobPosition unique id
+   * @apiSuccess {String} job.name
+   * @apiSuccess {Number} job.institutiionId
+   * @apiSuccess {String} job.institution
+   * @apiSuccess {Number} job.sirutaId
+   * @apiSuccess {String} job.uat
+   * @apiSuccess {Date}   job.dateStart
+   * @apiSuccess {Date}   job.dateEnd
+   * @apiSuccess {String} job.aditionalInfo
+   *
    * @apiErrorExample Error-Response:
    * HTTP 1/1 406
    * {
@@ -120,21 +131,21 @@ export class JobPositionController {
       }
 
       const job = {
-        jobId: 0,
+        id: 0,
         subjectId: params.subjectId,
         institutionId: params.institutionId,
         sirutaId: params.sirutaId,
         dateStart: params.dateStart,
         dateEnd: params.dateEnd,
         name: params.name,
-        info: params.info
+        additionalInfo: params.info
       };
       logger.debug(job);
       const sqlpool = await app.sqlPool;
       const dao = new JobPositionDao(sqlpool);
-      await dao.add(job);
+      const result = await dao.add(job);
 
-      res.status(StatusCodes.OK).send();
+      res.status(StatusCodes.OK).json(result);
     } catch (ex) {
       if (ex instanceof ApiError) {
         res.status(ex.statusCode).json(new ErrorResponse(ex));
@@ -203,14 +214,14 @@ export class JobPositionController {
       }
 
       const job = {
-        jobId: parseInt(req.params.jobId, 10),
+        id: parseInt(req.params.jobId, 10),
         subjectId: 0,
         institutionId: params.institutionId,
         sirutaId: params.sirutaId,
         dateStart: params.dateStart,
         dateEnd: params.dateEnd,
         name: params.name,
-        info: params.info
+        additionalInfo: params.info
       };
       logger.debug(job);
       const sqlpool = await app.sqlPool;
@@ -250,7 +261,7 @@ export class JobPositionController {
 
       const sqlpool = await app.sqlPool;
       const dao = new JobPositionDao(sqlpool);
-      await dao.delete(parseInt(req.params.docId, 10));
+      await dao.delete(parseInt(req.params.jobId, 10));
 
       res.status(StatusCodes.OK).send();
     } catch (ex) {

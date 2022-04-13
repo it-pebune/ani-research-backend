@@ -4,14 +4,14 @@ import { sqlVarChar } from '~shared';
 
 
 interface IJobPositionDTO {
-  jobId: number;
+  id: number;
   subjectId: number;
   institutionId: number;
   sirutaId: number;
   dateStart: Date;
   dateEnd?: Date;
   name: string;
-  info?: string;
+  additionalInfo?: string;
 }
 
 /**
@@ -47,7 +47,7 @@ export class JobPositionDao {
    *
    * @param {IJobPositionDTO} jobpos
    */
-  public async add(jobpos: IJobPositionDTO): Promise<IProcedureResult<any>> {
+  public async add(jobpos: IJobPositionDTO): Promise<IJobPositionDTO> {
     try {
       const sqlReq = new SqlRequest(this.sql)
         .input('subjectId', TYPES.Int, jobpos.subjectId)
@@ -56,11 +56,12 @@ export class JobPositionDao {
         .input('dateStart', TYPES.Date, jobpos.dateStart)
         .input('dateEnd', TYPES.Date, jobpos.dateEnd)
         .input('name', sqlVarChar(300), jobpos.name)
-        .input('info', sqlVarChar(MAX), jobpos.info)
+        .input('info', sqlVarChar(MAX), jobpos.additionalInfo)
         .output('jobId', TYPES.Int);
 
       const result = await sqlReq.execute('jobposAdd');
-      return result;
+      jobpos.id = result.output.jobId;
+      return jobpos;
     } catch (error) {
       throw error;
     }
@@ -73,13 +74,13 @@ export class JobPositionDao {
   public async update(jobpos: IJobPositionDTO): Promise<IProcedureResult<any>> {
     try {
       const sqlReq = new SqlRequest(this.sql)
-        .input('jobId', TYPES.Int, jobpos.jobId)
+        .input('jobId', TYPES.Int, jobpos.id)
         .input('institutionId', TYPES.Int, jobpos.institutionId)
         .input('sirutaId', TYPES.Int, jobpos.sirutaId)
         .input('dateStart', TYPES.Date, jobpos.dateStart)
         .input('dateEnd', TYPES.Date, jobpos.dateEnd)
         .input('name', sqlVarChar(300), jobpos.name)
-        .input('info', sqlVarChar(MAX), jobpos.info);
+        .input('info', sqlVarChar(MAX), jobpos.additionalInfo);
 
       const result = await sqlReq.execute('jobposUpdate');
       return result;
