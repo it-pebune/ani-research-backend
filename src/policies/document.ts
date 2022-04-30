@@ -35,6 +35,9 @@ class DocumentPolicy implements IPolicy {
         resources: '/',
         permissions: '*'
       }, {
+        resources: '/status',
+        permissions: '*'
+      }, {
         resources: '/:docId',
         permissions: ['get', 'put']
       }, {

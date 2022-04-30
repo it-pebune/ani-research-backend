@@ -84,7 +84,7 @@
   },
   "apidoc": {
     "name": "IntegRes REST API",
-    "version": "0.9.0",
+    "version": "0.10.0",
     "url": "https://ani-research-api-qa.azurewebsites.net"
   }
 }

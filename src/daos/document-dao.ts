@@ -231,4 +231,29 @@ export class DocumentDao {
       throw error;
     }
   }
+
+  /**
+   * Get document status
+   * @param {string} docId
+   * @param {number} subjectId
+   * @param {number} jobId
+   * @param {number} createdBy
+   * @return {Promise<ISubject>}
+   */
+  public async getStatus(docId: string | null = null, subjectId = 0, jobId = 0, createdBy = 0):
+    Promise<Array<{ id: string; status: DocumentStatus }>> {
+    try {
+      console.log(docId, subjectId, jobId, createdBy);
+      const result = await new SqlRequest(this.sql)
+        .input('statusValidated', TYPES.TinyInt, DocumentStatus.validated)
+        .input('docId', sqlVarChar(50), docId)
+        .input('subjectId', TYPES.Int, subjectId)
+        .input('jobId', TYPES.Int, jobId)
+        .input('createdBy', TYPES.Int, createdBy)
+        .execute('getDocumentStatus');
+      return result.recordset;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
