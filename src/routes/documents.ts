@@ -13,6 +13,10 @@ router.route('/')
   .get(ctrl.list.bind(ctrl))
   .post(ctrl.add.bind(ctrl));
 
+router.route('/status')
+  .all(documentPolicy.isAllowed.bind(documentPolicy))
+  .get(ctrl.getStatus.bind(ctrl));
+
 router.route('/:docId')
   .all(documentPolicy.isAllowed.bind(documentPolicy))
   .get(ctrl.read.bind(ctrl))

@@ -26,6 +26,13 @@ interface IDocumentDTO {
   downloadUrl: string;
 }
 
+interface IDocumentStatus {
+  docId: string;
+  subjectId: number;
+  jobId: number;
+  createdBy: number;
+}
+
 
 /** Document management controller */
 export class DocumentController {
@@ -642,6 +649,69 @@ export class DocumentController {
 
       const sasUrl = generateSasUrl(appConfig().storageOcrInfo, result.originalPath, 60);
       res.status(StatusCodes.OK).json({ url: sasUrl });
+    } catch (ex) {
+      logger.error(parseError(ex));
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ErrorResponse(ApiError.internal_error));
+    }
+  }
+
+  /**
+   * @api {get} /api/docs/status Get document(s) status
+   * @apiName DocumentGetStatus
+   * @apiGroup Document Management
+   * @apiVersion 0.10.0
+   * @apiPermission coordinator, reviewer, researcher
+   * @apiDescription Get the status of the document(s)
+   *
+   * @apiParam {string} docId   Optional
+   * @apiParam {int} subjectId  Optional
+   * @apiParam {int} jobId      Optional
+   * @apiParam {int} createdBy  Optional id of the user that created the doc
+   *
+   * @apiErrorExample Error-Response:
+   * HTTP 1/1 406
+   * {
+   *  code: VALIDATION_ERROR,
+   *  message: 'Input validation failed',
+   *  details: validation error array
+   * }
+   *
+   * @apiUse UnknownError
+   *
+   */
+  /**
+   * @param {Request} req
+   * @param {Response} res
+   * @return {Promise<void>}
+   */
+  public async getStatus(req: Request, res: Response) {
+    try {
+      const loggedUser = getRequestUser(req);
+      if (!loggedUser) {
+        res.status(StatusCodes.UNAUTHORIZED).send();
+        return;
+      }
+
+      const requestSchema = Joi.object<IDocumentStatus>({
+        docId: Joi.string(),
+        subjectId: Joi.number(),
+        jobId: Joi.number(),
+        createdBy: Joi.number()
+      });
+      const { value: params, error: verror } = requestSchema.validate(req.query);
+      if (verror || !params) {
+        logger.debug(verror?.details);
+        res.status(StatusCodes.BAD_REQUEST).json(
+          new ErrorResponse(ApiError.validation_error.withDetails(verror?.details))
+        );
+        return;
+      }
+
+      const sqlpool = await app.sqlPool;
+      const dao = new DocumentDao(sqlpool);
+      const result = await dao.getStatus(params.docId, params.subjectId || 0, params.jobId || 0, params.createdBy || 0);
+
+      res.status(StatusCodes.OK).json(result);
     } catch (ex) {
       logger.error(parseError(ex));
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ErrorResponse(ApiError.internal_error));
