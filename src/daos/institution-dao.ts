@@ -1,6 +1,6 @@
 import { ConnectionPool, IProcedureResult, MAX, Request as SqlRequest, TYPES } from 'mssql';
 import { IInstitution, InstitutionType } from '~entities';
-import { sqlVarChar } from '~shared';
+import { sqlNVarChar, sqlVarChar } from '~shared';
 
 
 interface IInstitutionDTO {
@@ -56,11 +56,11 @@ export class InstitutionDao {
         .input('type', TYPES.TinyInt, inst.type)
         .input('dateStart', TYPES.Date, inst.dateStart)
         .input('dateEnd', TYPES.Date, inst.dateEnd)
-        .input('name', sqlVarChar(200), inst.name)
-        .input('address', sqlVarChar(300), inst.address)
+        .input('name', sqlNVarChar(200), inst.name)
+        .input('address', sqlNVarChar(300), inst.address)
         .input('cui', sqlVarChar(20), inst.cui)
         .input('regCom', sqlVarChar(20), inst.regCom)
-        .input('info', sqlVarChar(MAX), inst.info)
+        .input('info', sqlNVarChar(MAX), inst.info)
         .output('institutionId', TYPES.Int);
 
       const result = await sqlReq.execute('institutionAdd');
@@ -82,11 +82,11 @@ export class InstitutionDao {
         .input('type', TYPES.TinyInt, inst.type)
         .input('dateStart', TYPES.Date, inst.dateStart)
         .input('dateEnd', TYPES.Date, inst.dateEnd)
-        .input('name', sqlVarChar(200), inst.name)
-        .input('address', sqlVarChar(300), inst.address)
+        .input('name', sqlNVarChar(200), inst.name)
+        .input('address', sqlNVarChar(300), inst.address)
         .input('cui', sqlVarChar(20), inst.cui)
         .input('regCom', sqlVarChar(20), inst.regCom)
-        .input('info', sqlVarChar(MAX), inst.info);
+        .input('info', sqlNVarChar(MAX), inst.info);
 
       const result = await sqlReq.execute('institutionUpdate');
       return result;

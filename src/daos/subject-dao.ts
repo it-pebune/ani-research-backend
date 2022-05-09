@@ -101,7 +101,7 @@ export class SubjectDao {
     try {
       const sqlReq = new SqlRequest(this.sql)
         .input('id', TYPES.Int, id)
-        .input('notes', sqlVarChar(MAX), notes);
+        .input('notes', sqlNVarChar(MAX), notes);
 
       const result = await sqlReq.execute('subjectUpdateNotes');
       return result;
