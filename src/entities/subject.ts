@@ -1,9 +1,10 @@
 
 /* eslint-disable no-unused-vars */
 export enum SubjectStatus {
-  assigned = 0,
-  workInProgress = 1,
-  researchCompleted = 2
+  unassigned = 0,
+  assigned,
+  workInProgress,
+  researchCompleted
 }
 /* eslint-enable no-unused-vars */
 
