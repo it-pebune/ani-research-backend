@@ -1,6 +1,6 @@
 import { ConnectionPool, IProcedureResult, MAX, Request as SqlRequest, TYPES } from 'mssql';
 import { IJobPosition } from '~entities';
-import { sqlVarChar } from '~shared';
+import { sqlNVarChar } from '~shared';
 
 
 interface IJobPositionDTO {
@@ -55,8 +55,8 @@ export class JobPositionDao {
         .input('sirutaId', TYPES.Int, jobpos.sirutaId)
         .input('dateStart', TYPES.Date, jobpos.dateStart)
         .input('dateEnd', TYPES.Date, jobpos.dateEnd)
-        .input('name', sqlVarChar(300), jobpos.name)
-        .input('info', sqlVarChar(MAX), jobpos.additionalInfo)
+        .input('name', sqlNVarChar(300), jobpos.name)
+        .input('info', sqlNVarChar(MAX), jobpos.additionalInfo)
         .output('jobId', TYPES.Int);
 
       const result = await sqlReq.execute('jobposAdd');
@@ -79,8 +79,8 @@ export class JobPositionDao {
         .input('sirutaId', TYPES.Int, jobpos.sirutaId)
         .input('dateStart', TYPES.Date, jobpos.dateStart)
         .input('dateEnd', TYPES.Date, jobpos.dateEnd)
-        .input('name', sqlVarChar(300), jobpos.name)
-        .input('info', sqlVarChar(MAX), jobpos.additionalInfo);
+        .input('name', sqlNVarChar(300), jobpos.name)
+        .input('info', sqlNVarChar(MAX), jobpos.additionalInfo);
 
       const result = await sqlReq.execute('jobposUpdate');
       return result;

@@ -28,7 +28,7 @@ export class AdminDao {
         .input('displayName', sqlNVarChar(200), user.displayName)
         .input('email', sqlVarChar(50), user.email)
         .input('provider', sqlVarChar(50), user.provider)
-        .input('providerData', sqlVarChar(MAX), JSON.stringify(user.providerData))
+        .input('providerData', sqlNVarChar(MAX), JSON.stringify(user.providerData))
         .input('googleId', sqlVarChar(50), user.googleId)
         .input('profileImageUrl', sqlVarChar(512), user.profileImageUrl)
         .output('userId', TYPES.Int);
@@ -77,7 +77,7 @@ export class AdminDao {
       const sqlReq = new SqlRequest(this.sql)
         .input('id', TYPES.Int, user.id)
         .input('email', sqlVarChar(50), user.email)
-        .input('providerData', sqlVarChar(MAX), JSON.stringify(user.providerData))
+        .input('providerData', sqlNVarChar(MAX), JSON.stringify(user.providerData))
         .input('profileImageUrl', sqlVarChar(512), user.profileImageUrl);
 
       const result = await sqlReq.execute('userUpdateProviderData');
@@ -114,7 +114,7 @@ export class AdminDao {
     try {
       const sqlReq = new SqlRequest(this.sql)
         .input('id', TYPES.Int, userId)
-        .input('notes', sqlVarChar(MAX), notes);
+        .input('notes', sqlNVarChar(MAX), notes);
 
       const result = await sqlReq.execute('adminUserUpdateNotes');
       return result;

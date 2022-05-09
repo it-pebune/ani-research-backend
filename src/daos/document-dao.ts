@@ -1,6 +1,6 @@
 import { ConnectionPool, IProcedureResult, MAX, Request as SqlRequest, TYPES } from 'mssql';
 import { DocumentStatus, DocumentType, IDocument } from '~entities';
-import { sqlVarChar } from '~shared';
+import { sqlNVarChar, sqlVarChar } from '~shared';
 
 
 interface IDocumentDTO {
@@ -78,7 +78,7 @@ export class DocumentDao {
         .input('type', TYPES.TinyInt, doc.type)
         .input('status', TYPES.TinyInt, doc.status)
         .input('date', TYPES.Date, doc.date)
-        .input('name', sqlVarChar(MAX), doc.name)
+        .input('name', sqlNVarChar(MAX), doc.name)
         .input('md5', sqlVarChar(32), doc.md5)
         .input('downloadedUrl', sqlVarChar(MAX), doc.downloadedUrl)
         .input('originalPath', sqlVarChar(MAX), doc.originalPath);
@@ -103,7 +103,7 @@ export class DocumentDao {
         .input('type', TYPES.TinyInt, doc.type)
         .input('status', TYPES.TinyInt, doc.status)
         .input('date', TYPES.Date, doc.date)
-        .input('name', sqlVarChar(MAX), doc.name);
+        .input('name', sqlNVarChar(MAX), doc.name);
 
       const result = await sqlReq.execute('documentUpdate');
       return result;
