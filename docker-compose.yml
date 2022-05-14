@@ -1,0 +1,19 @@
+version: "3.7"
+
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    volumes: ["mssql:/var/opt/mssql"]
+    environment: {ACCEPT_EULA: y, SA_PASSWORD: "Parola123!"}
+
+  node:
+    image: node:16.13.0
+    user: node
+    working_dir: /var/www/ani-research-backend
+    command: tail -F anything
+    volumes: ["./:/var/www/ani-research-backend"]
+    ports: ["7001:7001"]
+    env_file: [./env/development.env]
+
+volumes:
+  mssql: ~
