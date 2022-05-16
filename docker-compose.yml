@@ -12,7 +12,7 @@ services:
     working_dir: /var/www/ani-research-backend
     command: tail -F anything
     volumes: ["./:/var/www/ani-research-backend"]
-    ports: ["7001:7001"]
+    ports: ["3300:3300"]
     env_file: [./env/development.env]
 
 volumes:
