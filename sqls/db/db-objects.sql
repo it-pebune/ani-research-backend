@@ -4,7 +4,7 @@ GO
 
 IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'dbo')
 BEGIN
-  CREATE DATABASE [dbo];
+    CREATE DATABASE [dbo];
 END
 GO
 
