@@ -20,13 +20,10 @@ npm run dev
 
 To setup:
 
-1. Create `env/development.env` file. You can use `development.env.template` as an example
+1. Create and populate `env/development.env` file. You can use `development.env.template` as an example
 2. Run `docker-compose up -d`
-3. Enter the `mssql` container: `docker-compose exec mssql bash`
-4. Run `opt/mssql-tools/bin/sqlcmd -S localhost -U sa`. You will be prompted to enter the password, which is `Parola123!`
-5. Run `CREATE LOGIN rpb_usr WITH PASSWORD = 'Parola123!'` and `GO`
-6. Exit the `mssql` container and enter the `node` one: `docker-compose exec node bash`
-7. Run `node sqls/db/create-sps.mjs sa Parola123!`
+3. Enter the `node` container: `docker-compose exec node bash`
+4. Run `node sqls/db/create-sps.mjs sa Parola123!`
 
 To run app:
 

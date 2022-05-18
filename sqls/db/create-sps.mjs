@@ -41,6 +41,7 @@ const servers = [
 ];
 
 const allFiles = [
+  'sqls/db/create-local-db.sql',
   'sqls/db/db-objects.sql',
 
   'sqls/documents/documentAdd.sql',

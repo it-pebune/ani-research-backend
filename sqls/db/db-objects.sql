@@ -1,19 +1,5 @@
-/****** Object:  Database [dbo]    Script Date: 15/05/2022 00:56:42 ******/
-USE [master]
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'dbo')
-BEGIN
-    CREATE DATABASE [dbo];
-END
-GO
-
-USE [dbo]
-GO
 /****** Object:  User [rpb_usr]    Script Date: 13/02/2022 23:07:25 ******/
 CREATE USER [rpb_usr] FOR LOGIN [rpb_usr] WITH DEFAULT_SCHEMA=[dbo]
-GO
-GRANT INSERT, SELECT, UPDATE, DELETE TO [rpb_usr]
 GO
 /****** Object:  DatabaseRole [rpb_role]    Script Date: 13/02/2022 23:07:25 ******/
 CREATE ROLE [rpb_role]
