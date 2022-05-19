@@ -106,21 +106,15 @@ export class AdminDao {
   }
 
   /**
-   *
    * @param {number} userId
-   * @param {string} notes
+   * @param {string[]} notes
    */
-  public async updateNotes(userId: number, notes: string): Promise<IProcedureResult<any>> {
-    try {
-      const sqlReq = new SqlRequest(this.sql)
-        .input('id', TYPES.Int, userId)
-        .input('notes', sqlNVarChar(MAX), notes);
+  public async updateNotes(userId: number, notes: string[]): Promise<void> {
+    const sqlRequest = new SqlRequest(this.sql)
+      .input('id', TYPES.Int, userId)
+      .input('notes', sqlNVarChar(MAX), JSON.stringify(notes));
 
-      const result = await sqlReq.execute('adminUserUpdateNotes');
-      return result;
-    } catch (error) {
-      throw error;
-    }
+    await sqlRequest.execute('adminUserUpdateNotes');
   }
 
   /**

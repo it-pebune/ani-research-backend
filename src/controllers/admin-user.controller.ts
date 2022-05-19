@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { ErrorResponse, ApiError, UserStatus } from '~entities';
+import { ErrorResponse, ApiError, UserStatus, IUserFull } from '~entities';
 import {
   logger, parseError, getRequestUser,
   getRequestAdminUser,
@@ -25,8 +25,8 @@ interface IUserUpdateStatusDTO {
   status: UserStatus;
 }
 
-interface IUserUpdateNotesDTO {
-  notes: string;
+interface IUserAddNoteDTO {
+  note: string;
 }
 
 interface IUserDeleteDTO {
@@ -53,6 +53,7 @@ export class AdminUserController {
    * @apiSuccess {String} user.socialInfo
    * @apiSuccess {String} user.notes
    * @apiSuccess {UserRole[]} user.roles User roles
+   * @apiSuccess {string[]} user.notes User notes
    *
    * @apiUse UnknownError
    *
@@ -228,14 +229,26 @@ export class AdminUserController {
   }
 
   /**
-   * @api {put} /api/users/:userId/notes Update the specified user notes
-   * @apiName UserUpdateStatus
+   * @api {post} /api/users/:userId/note Adds a note for the specified user
+   * @apiName UserAddNote
    * @apiGroup User Management
-   * @apiVersion 0.2.0
+   * @apiVersion 0.10.0
    * @apiPermission admin
-   * @apiDescription Update the specified user notes
+   * @apiDescription Adds a note for the specified user
    *
-   * @apiParam {string} notes
+   * @apiParam {String} note
+   *
+   * @apiSuccess {Object} user User info
+   * @apiSuccess {Number} user.id User unique id
+   * @apiSuccess {String} user.firstName
+   * @apiSuccess {String} user.lastName
+   * @apiSuccess {String} user.displayName
+   * @apiSuccess {String} user.email
+   * @apiSuccess {String} user.phone
+   * @apiSuccess {String} user.socialInfo
+   * @apiSuccess {String} user.notes
+   * @apiSuccess {UserRole[]} user.roles User roles
+   * @apiSuccess {String[]} user.notes User notes
    *
    * @apiErrorExample Error-Response:
    * HTTP 1/1 406
@@ -246,46 +259,52 @@ export class AdminUserController {
    * }
    *
    * @apiUse UnknownError
-   *
    */
   /**
    * @param {Request} req
    * @param {Response} res
+   *
    * @return {Promise<void>}
    */
-  public async updateNotes(req: Request, res: Response) {
+  public async addNote(req: Request, res: Response): Promise<void> {
     try {
-      const loggedUser = getRequestUser(req);
-      if (!loggedUser) {
+      if (!getRequestUser(req)) {
         res.status(StatusCodes.UNAUTHORIZED).send();
-        return;
-      }
-      const user: any = getRequestAdminUser(req);
-      if (!user) {
-        res.status(StatusCodes.UNAUTHORIZED).send();
+
         return;
       }
 
-      const requestSchema = Joi.object<IUserUpdateNotesDTO>({
-        notes: Joi.number().required()
-      });
-      const { value: params, error: verror } = requestSchema.validate(req.body);
+      const user: IUserFull | null = getRequestAdminUser(req);
+      if (!user) {
+        res.status(StatusCodes.NOT_FOUND).send();
+
+        return;
+      }
+
+      const validation = Joi.object<IUserAddNoteDTO>({ note: Joi.string().required() });
+      const { value: params, error: verror } = validation.validate(req.body);
+
       if (verror || !params) {
         logger.debug(verror?.details);
-        res.status(StatusCodes.BAD_REQUEST).json(
-          new ErrorResponse(ApiError.validation_error.withDetails(verror?.details))
-        );
+        res.status(StatusCodes.BAD_REQUEST)
+          .json(new ErrorResponse(ApiError.validation_error.withDetails(verror?.details)));
+
         return;
       }
 
-      const sqlpool = await app.sqlPool;
-      const dao = new AdminDao(sqlpool);
-      await dao.updateNotes(user.id, params.notes);
+      user.notes ? user.notes.push(params.note) : user.notes = [params.note];
 
-      res.status(StatusCodes.OK).json(user);
+      const sqlPool = await app.sqlPool;
+      const dao = new AdminDao(sqlPool);
+
+      await dao.updateNotes(user.id, user.notes);
+
+      res.status(StatusCodes.OK)
+        .json(user);
     } catch (ex) {
       logger.error(parseError(ex));
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ErrorResponse(ApiError.internal_error));
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(new ErrorResponse(ApiError.internal_error));
     }
   }
 

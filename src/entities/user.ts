@@ -39,7 +39,7 @@ export interface IUserFull {
   profileImageUrl: string;
   googleId: string;
   socialInfo?: string;
-  notes?: string;
+  notes?: string[];
   created: Date;
   updated: Date;
   status: UserStatus;
@@ -63,12 +63,20 @@ export interface IUser {
 
 export const initWithDbRecord = (userInfo: any, roles: UserRole[]): IUserFull => {
   const user: IUserFull = userInfo;
+
   user.roles = roles;
+
   if (userInfo.settings) {
     user.settings = JSON.parse(userInfo.settings);
   }
+
   if (userInfo.providerData) {
     user.providerData = JSON.parse(userInfo.providerData);
   }
+
+  if (userInfo.notes) {
+    userInfo.notes = JSON.parse(userInfo.notes);
+  }
+
   return user;
 };
