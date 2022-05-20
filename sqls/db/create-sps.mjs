@@ -36,13 +36,38 @@ const poolConfig = {
 const servers = [
   {
     ...serverBase,
-    name: 'rpb_test',
-    server: 'localhost',
-    database: 'rpb'
+    server: process.env.DATABASE_SERVER ?? 'localhost',
   }
 ];
 
 const allFiles = [
+  'sqls/db/create-local-db.sql',
+  'sqls/db/db-objects.sql',
+
+  'sqls/documents/documentAdd.sql',
+  'sqls/documents/documentDelete.sql',
+  'sqls/documents/documentExists.sql',
+  'sqls/documents/documentList.sql',
+  'sqls/documents/documentUpdate.sql',
+  'sqls/documents/documentUpdateData.sql',
+  'sqls/documents/getDocumentDataRaw.sql',
+  'sqls/documents/getDocumentById.sql',
+  'sqls/documents/getDocumentData.sql',
+  'sqls/documents/getDocumentDataRaw.sql',
+  'sqls/documents/getDocumentOriginalPath.sql',
+
+  'sqls/institutions/getInstitutionById.sql',
+  'sqls/institutions/institutionAdd.sql',
+  'sqls/institutions/institutionDelete.sql',
+  'sqls/institutions/institutionList.sql',
+  'sqls/institutions/institutionUpdate.sql',
+
+  'sqls/jobpositions/getJobPositionById.sql',
+  'sqls/jobpositions/jobposAdd.sql',
+  'sqls/jobpositions/jobposDelete.sql',
+  'sqls/jobpositions/jobposList.sql',
+  'sqls/jobpositions/jobposUpdate.sql',
+
   'sqls/login/didLogin.sql',
   'sqls/login/didLogout.sql',
 
@@ -60,6 +85,7 @@ const allFiles = [
   'sqls/users/adminUserAdd.sql',
   'sqls/users/adminUserDelete.sql',
   'sqls/users/adminUserList.sql',
+  'sqls/users/adminUserListByRole.sql',
   'sqls/users/adminUserUpdate.sql',
   'sqls/users/adminUserUpdateNotes.sql',
   'sqls/users/adminUserUpdateStatus.sql',

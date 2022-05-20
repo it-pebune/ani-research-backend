@@ -1,9 +1,9 @@
 apidoc/
-env/
-
+/env/
+!env/development.env.template
+!env/production.env
 test/test-fileshare.ts
 test/azure-settings.json
-
 
 # Logs
 logs
