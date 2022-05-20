@@ -26,9 +26,9 @@ router.route('/:auserId/delete')
 router.route('/:auserId/status')
   .all(adminUserPolicy.isAllowed.bind(adminUserPolicy))
   .put(ctrl.updateStatus.bind(ctrl));
-router.route('/:auserId/notes')
+router.route('/:auserId/note')
   .all(adminUserPolicy.isAllowed.bind(adminUserPolicy))
-  .put(ctrl.updateNotes.bind(ctrl));
+  .post(ctrl.addNote.bind(ctrl));
 
 router.param('auserId', ctrl.userById);
 

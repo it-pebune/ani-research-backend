@@ -38,7 +38,7 @@ class AdminUserPolicy implements IPolicy {
         resources: '/:auserId/status',
         permissions: '*'
       }, {
-        resources: '/:auserId/notes',
+        resources: '/:auserId/note',
         permissions: '*'
       }]
     }, {
