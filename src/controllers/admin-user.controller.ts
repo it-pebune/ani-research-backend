@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { ErrorResponse, ApiError, UserStatus, IUserFull } from '~entities';
+import { ErrorResponse, ApiError, UserStatus, IUserFull, IAuthUser, INote } from '~entities';
 import {
   logger, parseError, getRequestUser,
   getRequestAdminUser,
@@ -51,9 +51,8 @@ export class AdminUserController {
    * @apiSuccess {String} user.email
    * @apiSuccess {String} user.phone
    * @apiSuccess {String} user.socialInfo
-   * @apiSuccess {String} user.notes
    * @apiSuccess {UserRole[]} user.roles User roles
-   * @apiSuccess {string[]} user.notes User notes
+   * @apiSuccess {IUserNote[]} user.notes User notes
    *
    * @apiUse UnknownError
    *
@@ -246,9 +245,8 @@ export class AdminUserController {
    * @apiSuccess {String} user.email
    * @apiSuccess {String} user.phone
    * @apiSuccess {String} user.socialInfo
-   * @apiSuccess {String} user.notes
    * @apiSuccess {UserRole[]} user.roles User roles
-   * @apiSuccess {String[]} user.notes User notes
+   * @apiSuccess {INote[]} user.notes User notes
    *
    * @apiErrorExample Error-Response:
    * HTTP 1/1 406
@@ -268,7 +266,9 @@ export class AdminUserController {
    */
   public async addNote(req: Request, res: Response): Promise<void> {
     try {
-      if (!getRequestUser(req)) {
+      const currentUser: IAuthUser | null = getRequestUser(req);
+
+      if (!currentUser) {
         res.status(StatusCodes.UNAUTHORIZED).send();
 
         return;
@@ -292,7 +292,9 @@ export class AdminUserController {
         return;
       }
 
-      user.notes ? user.notes.push(params.note) : user.notes = [params.note];
+      const note: INote = { content: params.note, author: currentUser.email, createdAt: new Date() };
+
+      user.notes ? user.notes.push(note) : user.notes = [note];
 
       const sqlPool = await app.sqlPool;
       const dao = new AdminDao(sqlPool);

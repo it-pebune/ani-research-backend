@@ -1,7 +1,6 @@
 import { ConnectionPool, IProcedureResult, MAX, Request as SqlRequest, TYPES } from 'mssql';
-import { IGoogleData, IProviderData, IUser, IUserFull, UserStatus } from '~entities';
+import { IGoogleData, INote, IProviderData, IUser, IUserFull, UserStatus } from '~entities';
 import { sqlNVarChar, sqlVarChar, UserRole } from '~shared';
-
 
 /**
  * Admin Data Access
@@ -107,9 +106,9 @@ export class AdminDao {
 
   /**
    * @param {number} userId
-   * @param {string[]} notes
+   * @param {INote[]} notes
    */
-  public async updateNotes(userId: number, notes: string[]): Promise<void> {
+  public async updateNotes(userId: number, notes: INote[]): Promise<void> {
     const sqlRequest = new SqlRequest(this.sql)
       .input('id', TYPES.Int, userId)
       .input('notes', sqlNVarChar(MAX), JSON.stringify(notes));

@@ -26,6 +26,12 @@ export interface IGoogleData {
   picture?: string;
 }
 
+export interface INote {
+  content: string;
+  author: string;
+  createdAt: Date;
+}
+
 export interface IUserFull {
   id: number;
   firstName: string;
@@ -39,7 +45,7 @@ export interface IUserFull {
   profileImageUrl: string;
   googleId: string;
   socialInfo?: string;
-  notes?: string[];
+  notes?: INote[];
   created: Date;
   updated: Date;
   status: UserStatus;
