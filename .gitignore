@@ -112,3 +112,4 @@ dist
 
 # IDEs
 .idea
+.DS_Store
