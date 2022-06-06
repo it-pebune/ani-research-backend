@@ -9,6 +9,7 @@ GO
 CREATE PROCEDURE [dbo].institutionAdd(
   @sirutaId     INT,
   @type         TINYINT,
+  @requireDecls TINYINT,
   @name         VARCHAR(200),
   @address      VARCHAR(300),
   @dateStart    DATE,
@@ -23,9 +24,9 @@ BEGIN
   SET NOCOUNT ON
 
   INSERT INTO Institution
-    ([sirutaId], [type], [name], [address], [dateStart], [dateEnd], [cui], [regCom], [aditionalInfo])
+    ([sirutaId], [type], [requireDecls], [name], [address], [dateStart], [dateEnd], [cui], [regCom], [aditionalInfo])
   VALUES
-    (@sirutaId, @type, @name, @address, @dateStart, @dateEnd, @cui, @regCom, @info)
+    (@sirutaId, @type, @requireDecls, @name, @address, @dateStart, @dateEnd, @cui, @regCom, @info)
 
   SET @institutionId = SCOPE_IDENTITY()
 END

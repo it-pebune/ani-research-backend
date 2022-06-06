@@ -7,6 +7,7 @@ interface IInstitutionDTO {
   institutionId: number;
   sirutaId: number;
   type: InstitutionType;
+  requireDecls: number;
   name: string;
   address?: string;
   cui?: string;
@@ -54,6 +55,7 @@ export class InstitutionDao {
       const sqlReq = new SqlRequest(this.sql)
         .input('sirutaId', TYPES.Int, inst.sirutaId)
         .input('type', TYPES.TinyInt, inst.type)
+        .input('requireDecls', TYPES.TinyInt, inst.requireDecls)
         .input('dateStart', TYPES.Date, inst.dateStart)
         .input('dateEnd', TYPES.Date, inst.dateEnd)
         .input('name', sqlNVarChar(200), inst.name)
@@ -80,6 +82,7 @@ export class InstitutionDao {
         .input('institutionId', TYPES.Int, inst.institutionId)
         .input('sirutaId', TYPES.Int, inst.sirutaId)
         .input('type', TYPES.TinyInt, inst.type)
+        .input('requireDecls', TYPES.TinyInt, inst.requireDecls)
         .input('dateStart', TYPES.Date, inst.dateStart)
         .input('dateEnd', TYPES.Date, inst.dateEnd)
         .input('name', sqlNVarChar(200), inst.name)
