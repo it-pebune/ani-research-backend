@@ -16,6 +16,7 @@ export interface IInstitution {
   id: string;
   sirutaId: number;
   type: InstitutionType;
+  requireDecls: number;
   name: string;
   address?: string;
   cui?: string;

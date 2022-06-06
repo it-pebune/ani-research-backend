@@ -10,6 +10,7 @@ CREATE PROCEDURE [dbo].institutionUpdate(
   @institutionId  INT,
   @sirutaId       INT,
   @type           TINYINT,
+  @requireDecls   TINYINT,
   @name           VARCHAR(200),
   @address        VARCHAR(300),
   @dateStart      DATE,
@@ -25,6 +26,7 @@ BEGIN
   UPDATE  Institution
   SET     sirutaId = @sirutaId,
           [type] = @type,
+          [requireDecls] = @requireDecls,
           [name] = @name,
           [address] = @address,
           dateStart = @dateStart,

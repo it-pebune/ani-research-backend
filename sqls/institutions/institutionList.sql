@@ -12,7 +12,8 @@ BEGIN
   SET NOCOUNT ON
 
   SELECT  I.[id], I.[sirutaId], U.name uat, I.[type], I.[name], I.[address],
-          I.[dateStart], I.[dateEnd], I.[cui], I.[regCom], I.[aditionalInfo]
+          I.[dateStart], I.[dateEnd], I.[cui], I.[regCom], I.[aditionalInfo],
+          I.[requireDecls]
   FROM    Institution I
           INNER JOIN
           Uat U ON I.sirutaId = U.sirutaId

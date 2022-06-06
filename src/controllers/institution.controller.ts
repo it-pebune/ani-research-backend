@@ -13,6 +13,7 @@ interface IInstitutionDTO {
   institutionId: number;
   sirutaId: number;
   type: InstitutionType;
+  requireDecls: number;
   name: string;
   address?: string;
   cui?: string;
@@ -37,6 +38,7 @@ export class InstitutionController {
    * @apiSuccess {Number} inst.id Institution unique id
    * @apiSuccess {String} inst.name
    * @apiSuccess {Number} inst.type
+   * @apiSuccess {Number} inst.requireDecls
    * @apiSuccess {Number} inst.sirutaId
    * @apiSuccess {String} inst.uat
    * @apiSuccess {Date}   inst.dateStart
@@ -76,6 +78,7 @@ export class InstitutionController {
    *
    * @apiParam {Number} sirutaId
    * @apiParam {Number} type
+   * @apiParam {Number} requireDecls 1 - requires declarations, 0 - does not require
    * @apiParam {String} name
    * @apiParam {String} address
    * @apiParam {String} cui
@@ -111,6 +114,7 @@ export class InstitutionController {
       const requestSchema = Joi.object<IInstitutionDTO>({
         sirutaId: Joi.number().required(),
         type: Joi.number().required(),
+        requireDecls: Joi.number().required(),
         dateStart: Joi.date().required(),
         dateEnd: Joi.date(),
         name: Joi.string().required(),
@@ -132,6 +136,7 @@ export class InstitutionController {
         institutionId: 0,
         sirutaId: params.sirutaId,
         type: params.type,
+        requireDecls: params.requireDecls,
         dateStart: params.dateStart,
         dateEnd: params.dateEnd,
         name: params.name,
@@ -166,6 +171,7 @@ export class InstitutionController {
    *
    * @apiParam {Number} sirutaId
    * @apiParam {Number} type
+   * @apiParam {Number} requireDecls 1 - requires declarations, 0 - does not require
    * @apiParam {String} name
    * @apiParam {String} address
    * @apiParam {String} cui
@@ -201,6 +207,7 @@ export class InstitutionController {
       const requestSchema = Joi.object<IInstitutionDTO>({
         sirutaId: Joi.number().required(),
         type: Joi.number().required(),
+        requireDecls: Joi.number().required(),
         dateStart: Joi.date().required(),
         dateEnd: Joi.date(),
         name: Joi.string().required(),
@@ -222,6 +229,7 @@ export class InstitutionController {
         institutionId: parseInt(req.params.instId, 10),
         sirutaId: params.sirutaId,
         type: params.type,
+        requireDecls: params.requireDecls,
         dateStart: params.dateStart,
         dateEnd: params.dateEnd,
         name: params.name,
