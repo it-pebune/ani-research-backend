@@ -15,7 +15,8 @@ export enum DocumentStatus {
   ocrError,
   ocrOutputNotFound,
   ocrOutputDownloadError,
-  validated
+  validated,
+  downloadError
 }
 /* eslint-enable no-unused-vars */
 
