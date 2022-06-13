@@ -2,7 +2,10 @@ import { createHash } from 'crypto';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { v4 as uuidv4 } from 'uuid';
-import { ApiError, DocumentType, DocumentVersion, ErrorResponse, IQueueInput, ISubject } from '~entities';
+import {
+  ApiError, DocumentStatus, DocumentType,
+  DocumentVersion, ErrorResponse, IQueueInput, ISubject
+} from '~entities';
 import {
   appConfig, logger, parseError, getRequestUser, generateSasUrl
 } from '~shared';
@@ -79,15 +82,18 @@ export class DocumentController {
    * @api {post} /api/docs Add a new document
    * @apiName DocumentAdd
    * @apiGroup Document Management
-   * @apiVersion 0.5.0
+   * @apiVersion 0.13.0
    * @apiPermission coordinator, reviewer, researcher
    * @apiDescription Adds a new document
    *
-   * @apiParam {Number} subjectId
-   * @apiParam {Number} type
-   * @apiParam {Number} status
-   * @apiParam {String} name
-   * @apiParam {String} downloadUrl
+   * @apiParam {Object[]} docs Array of documents to add
+   * @apiParam {Number} doc.subjectId
+   * @apiParam {Number} doc.jobId
+   * @apiParam {Number} doc.type
+   * @apiParam {Number} doc.status
+   * @apiParam {Date}   doc.date
+   * @apiParam {String} doc.name
+   * @apiParam {String} doc.downloadUrl
    *
    * @apiErrorExample Error-Response:
    * HTTP 1/1 406
@@ -113,7 +119,7 @@ export class DocumentController {
         return;
       }
 
-      const requestSchema = Joi.object<IDocumentDTO>({
+      const requestSchema = Joi.array().items(Joi.object<IDocumentDTO>({
         subjectId: Joi.number().required(),
         jobId: Joi.number().required(),
         type: Joi.number().required(),
@@ -121,7 +127,7 @@ export class DocumentController {
         date: Joi.date().required(),
         name: Joi.string().required(),
         downloadUrl: Joi.string().required()
-      });
+      }));
       const { value: params, error: verror } = requestSchema.validate(req.body);
       if (verror || !params) {
         logger.debug(verror?.details);
@@ -131,22 +137,50 @@ export class DocumentController {
         return;
       }
 
-      const appCfg = appConfig();
+      const result: boolean[] = [];
+      for (let i = 0; i < params.length; i++) {
+        const success = await this.processAddDocumentItem(loggedUser.id, params[i]);
+        result.push(success);
+        logger.debug(`processed: ${params[i].name} ${params[i].downloadUrl}: ${success}`);
+      }
 
-      // download file and calculate hash
-      const buff = await this.downloadFile(params.downloadUrl);
+      res.status(StatusCodes.OK).send(result);
+    } catch (ex) {
+      if (ex instanceof ApiError) {
+        res.status(ex.statusCode).json(new ErrorResponse(ex));
+      } else {
+        logger.error(parseError(ex));
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ErrorResponse(ApiError.internal_error));
+      }
+    }
+  }
+
+  /**
+   * @param {Number} userId: logged in user id
+   * @param {IDocumentDTO} params
+   * @return {Boolean}
+   */
+  private async processAddDocumentItem(userId: number, params: IDocumentDTO): Promise<boolean> {
+    const appCfg = appConfig();
+    const docId = uuidv4();
+    const sqlpool = await app.sqlPool;
+    const docDao = new DocumentDao(sqlpool);
+
+    // download file and calculate hash
+    let md5 = '';
+    let originalPath = '';
+    const buff = await this.downloadFile(params.downloadUrl);
+    if (buff) {
       const hashSum = createHash('sha1'); // quicker than sha256
       hashSum.update(buff);
-      const md5 = hashSum.digest('base64');
+      md5 = hashSum.digest('base64');
 
       // check if document already exists in DB
-      const sqlpool = await app.sqlPool;
-      const docDao = new DocumentDao(sqlpool);
       const exists = await docDao.exists(md5, params.downloadUrl);
       if (exists) {
         logger.debug(`there is already a document with this md5: ${md5} ${params.downloadUrl}`);
-        res.status(StatusCodes.BAD_REQUEST).json(new ErrorResponse(ApiError.document_already_exists));
-        return;
+        // res.status(StatusCodes.BAD_REQUEST).json(new ErrorResponse(ApiError.document_already_exists));
+        return false;
       }
 
       // upload file to storage
@@ -154,16 +188,15 @@ export class DocumentController {
       const subj = await subjDao.getById(params.subjectId);
       if (!subj) {
         logger.debug(`there is no subject with this id: ${params.subjectId}`);
-        res.status(StatusCodes.BAD_REQUEST).json(new ErrorResponse(ApiError.unknown_subject));
-        return;
+        // res.status(StatusCodes.BAD_REQUEST).json(new ErrorResponse(ApiError.unknown_subject));
+        return false;
       }
 
       const subjFolder = this.getSubjectFolder(subj);
       const declFolder = params.type === DocumentType.assetDeclaration ? 'DA' : 'DI';
-      const docId = uuidv4();
       const fileName = docId;
       // eslint-disable-next-line max-len
-      const originalPath = `${appCfg.storageOcrInfo.fileEndpoint}/${appCfg.shareDeclarations}/${subjFolder}/${declFolder}/${fileName}`;
+      originalPath = `${appCfg.storageOcrInfo.fileEndpoint}/${appCfg.shareDeclarations}/${subjFolder}/${declFolder}/${fileName}`;
 
       const shareServiceClient = ShareServiceClient.fromConnectionString(appCfg.storageOcrCnnString);
       const shareClient = shareServiceClient.getShareClient(appCfg.shareDeclarations);
@@ -179,7 +212,7 @@ export class DocumentController {
         docId,
         subjectId: params.subjectId,
         jobId: params.jobId,
-        userId: loggedUser.id,
+        userId,
         type: params.type,
         status: params.status,
         date: params.date,
@@ -215,16 +248,25 @@ export class DocumentController {
         messageId: sendResp.messageId,
         popReceipt: sendResp.popReceipt
       });
-
-      res.status(StatusCodes.OK).send();
-    } catch (ex) {
-      if (ex instanceof ApiError) {
-        res.status(ex.statusCode).json(new ErrorResponse(ex));
-      } else {
-        logger.error(parseError(ex));
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ErrorResponse(ApiError.internal_error));
-      }
+    } else {
+      const doc = {
+        docId,
+        subjectId: params.subjectId,
+        jobId: params.jobId,
+        userId,
+        type: params.type,
+        status: DocumentStatus.downloadError,
+        date: params.date,
+        name: params.name,
+        md5,
+        downloadedUrl: params.downloadUrl,
+        originalPath
+      };
+      logger.debug(doc);
+      await docDao.add(doc);
     }
+
+    return true;
   }
 
   /**
@@ -263,12 +305,13 @@ export class DocumentController {
   /**
    * @param {String} url
    */
-  private async downloadFile(url: string): Promise<Buffer> {
+  private async downloadFile(url: string): Promise<Buffer | null> {
     try {
       return await got(url).buffer();
     } catch (error) {
       logger.error(parseError(error));
-      throw ApiError.download_file_error.withDetails({ url });
+      // throw ApiError.download_file_error.withDetails({ url });
+      return null;
     }
   }
 
