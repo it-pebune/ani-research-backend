@@ -57,6 +57,7 @@ CREATE TABLE [dbo].[Institution](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[sirutaId] [int] NOT NULL,
 	[type] [tinyint] NOT NULL,
+    [requireDecls] [tinyint] NOT NULL,
 	[name] [varchar](200) NOT NULL,
 	[address] [varchar](300) NULL,
 	[dateStart] [date] NULL,
