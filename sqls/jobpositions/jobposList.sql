@@ -20,7 +20,7 @@ BEGIN
           Institution I ON J.institutionId = I.id
           INNER JOIN
           Uat U ON J.sirutaId = U.sirutaId
-  WHERE   J.subjectId = @subjectId
+  WHERE   J.subjectId = @subjectId AND J.deleted = 0
 END
 GO
 GRANT EXEC ON [dbo].jobposList TO rpb_role
