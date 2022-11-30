@@ -180,4 +180,23 @@ export class SubjectDao {
       throw error;
     }
   }
+
+  /**
+   * @param {string[]} hashes
+   * @return {Promise<{}>}
+   */
+  public async getSubjectsWithHashes(hashes: string[]): Promise<{ [hash: string]: number }> {
+    const subjects = (await new SqlRequest(this.sql)
+      .input('hashes', sqlNVarChar(MAX), hashes.join(','))
+      .execute('getSubjectsWithHashes'))
+      .recordset;
+
+    const subjectIdsByHashes: any = {};
+
+    for (const subject of subjects) {
+      subjectIdsByHashes[subject.hash] = subject.id;
+    }
+
+    return subjectIdsByHashes;
+  }
 }

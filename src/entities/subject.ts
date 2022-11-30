@@ -8,6 +8,12 @@ export enum SubjectStatus {
 }
 /* eslint-enable no-unused-vars */
 
+export interface IWSMPListResponse {
+  legislature: number;
+  profileUrl: string;
+  results: any[];
+}
+
 export interface ISubjectDTO {
   firstName: string;
   lastName: string;

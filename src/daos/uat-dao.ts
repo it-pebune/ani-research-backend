@@ -86,6 +86,6 @@ export class UatDao {
       .input('sirutaId', TYPES.Int, sirutaId)
       .execute('getUatWithCounty'));
 
-    return { ...result.recordset[0], county: result.recordset[1] ?? null };
+    return { ...result.recordset[0], county: result.recordsets[1][0] ?? null };
   }
 }

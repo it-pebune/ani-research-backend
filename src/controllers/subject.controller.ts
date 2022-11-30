@@ -1,19 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { v4 as uuidv4 } from 'uuid';
-import { SubjectStatus, ErrorResponse, ApiError } from '~entities';
+import { SubjectStatus, ErrorResponse, ApiError, ISubjectDTO } from '~entities';
 import {
-  logger, parseError, getRequestUser,
+  logger,
+  parseError,
+  getRequestUser,
   setRequestSubject,
   getRequestSubject,
   userHasRole,
-  UserRole
+  UserRole,
+  computeSubjectHash
 } from '~shared';
 import app from '~app';
 import { SubjectDao } from '~daos';
 import Joi from 'joi';
-import { ISubjectDTO } from '~entities';
-import { computeHash } from '../shared/subject';
 
 interface ISubjectUpdateNotesDTO {
   notes: string;
@@ -127,7 +128,7 @@ export class SubjectController {
         photoUrl: params.photoUrl,
         dob: params.dob,
         sirutaId: params.sirutaId,
-        hash: await computeHash(params),
+        hash: await computeSubjectHash(params),
         created: new Date()
       };
 
@@ -208,7 +209,7 @@ export class SubjectController {
       subject.photoUrl = params.photoUrl;
       subject.dob = params.dob;
       subject.sirutaId = params.sirutaId || 0;
-      subject.hash = await computeHash(subject);
+      subject.hash = await computeSubjectHash(subject);
 
       const sqlpool = await app.sqlPool;
       const dao = new SubjectDao(sqlpool);

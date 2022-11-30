@@ -3,16 +3,8 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import got from 'got';
 import Joi from 'joi';
-import {
-  appConfig, logger, parseError, getRequestUser
-} from '~shared';
-import { ApiError, ErrorResponse } from '~entities';
-
-interface IWSMPListResponse {
-  legislature: number;
-  profileUrl: string;
-  results: any[];
-}
+import { appConfig, logger, parseError, getRequestUser, markAddedSubjects } from '~shared';
+import { ApiError, ErrorResponse, IWSMPListResponse } from '~entities';
 
 /** Web Scrapping API wrapper controller */
 export class WebScrapController {
@@ -85,6 +77,7 @@ export class WebScrapController {
         logger.debug('send from cache');
         const content = await blockBlobClient.downloadToBuffer();
         const data: IWSMPListResponse = JSON.parse(content.toString());
+        await markAddedSubjects(data);
         res.status(StatusCodes.OK).json(data);
         return;
       }
@@ -101,7 +94,7 @@ export class WebScrapController {
         logger.debug(data.results.length);
         const content = Buffer.from(JSON.stringify(data));
         await blockBlobClient.upload(content, content.byteLength);
-
+        await markAddedSubjects(data);
         res.status(StatusCodes.OK).json(data);
         return;
       }
