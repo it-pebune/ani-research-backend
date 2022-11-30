@@ -12,9 +12,8 @@ export async function computeHash(subject: ISubjectDTO): Promise<string> {
   const uat = await uatDao.getUatWithCounty(subject.sirutaId);
 
   return createHash('sha1')
-    .update(subject.firstName)
-    .update(subject.lastName)
-    .update(uat?.name ?? '')
-    .update(uat?.county?.name ?? '')
+    .update(subject.firstName.toLowerCase())
+    .update(subject.lastName.toLowerCase())
+    .update(uat?.county?.name.toLowerCase() ?? '')
     .digest('hex');
 }
