@@ -16,5 +16,5 @@ export async function computeHash(subject: ISubjectDTO): Promise<string> {
     .update(subject.lastName)
     .update(uat?.name ?? '')
     .update(uat?.county?.name ?? '')
-    .digest('base64');
+    .digest('hex');
 }
