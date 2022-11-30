@@ -13,7 +13,8 @@ CREATE PROCEDURE [dbo].subjectUpdate(
   @dob          DATE,
   @sirutaId     INT = 0,
   @notes        VARCHAR(MAX) = '',
-  @photoUrl     VARCHAR(MAX) = ''
+  @photoUrl     VARCHAR(MAX) = '',
+  @hash         CHAR(40)
 )
 AS
 BEGIN
@@ -28,6 +29,7 @@ BEGIN
       sirutaID = @sirutaId,
       photoUrl = @photoUrl,
       notes = @notes,
+	  [hash] = @hash,
 			updated = GETDATE()
 	WHERE	id = @id
 

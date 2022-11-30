@@ -32,7 +32,7 @@ BEGIN
   SELECT  S.id, S.firstName, S.lastName, S.sirutaId, S.dob, S.photoUrl,
           Ut.name city, Ut.countyId, C.name county, S.created, S.deleted,
           S.assignedTo assignedToId, U.displayName assignedTo, S.status,
-          D.docCount, D.ocrokCount, D.ocrerrCount, validCount
+          D.docCount, D.ocrokCount, D.ocrerrCount, validCount, S.hash
   FROM    [Subject] S
           LEFT JOIN
           Uat Ut ON S.sirutaId = Ut.sirutaId

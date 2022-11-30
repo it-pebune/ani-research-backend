@@ -2,7 +2,6 @@ import { ConnectionPool, IProcedureResult, MAX, Request as SqlRequest, TYPES } f
 import { ISubject, ISubjectAssignedHistory, SubjectStatus } from '~entities';
 import { sqlNVarChar, sqlVarChar } from '~shared';
 
-
 interface ISubjectDTO {
   id: number;
   uuid: string;
@@ -11,6 +10,7 @@ interface ISubjectDTO {
   photoUrl: string;
   dob: Date;
   sirutaId?: number;
+  hash: string;
 }
 
 interface ISubjectAssignDTO {
@@ -62,6 +62,7 @@ export class SubjectDao {
         .input('photoUrl', sqlNVarChar(MAX), subject.photoUrl)
         .input('dob', TYPES.Date, subject.dob)
         .input('sirutaId', TYPES.Int, subject.sirutaId || 0)
+        .input('hash', sqlNVarChar(40), subject.hash)
         .output('subjectId', TYPES.Int);
 
       const result = await sqlReq.execute('subjectAdd');
@@ -73,9 +74,9 @@ export class SubjectDao {
 
   /**
    *
-   * @param {ISubjectDTO} subject
+   * @param {ISubject} subject
    */
-  public async update(subject: ISubjectDTO): Promise<IProcedureResult<any>> {
+  public async update(subject: ISubject): Promise<IProcedureResult<any>> {
     try {
       const sqlReq = new SqlRequest(this.sql)
         .input('id', TYPES.Int, subject.id)
@@ -83,7 +84,8 @@ export class SubjectDao {
         .input('lastName', sqlNVarChar(100), subject.lastName)
         .input('photoUrl', sqlNVarChar(MAX), subject.photoUrl)
         .input('dob', TYPES.Date, subject.dob)
-        .input('sirutaId', TYPES.Int, subject.sirutaId || 0);
+        .input('sirutaId', TYPES.Int, subject.sirutaId || 0)
+        .input('hash', sqlNVarChar(40), subject.hash);
 
       const result = await sqlReq.execute('subjectUpdate');
       return result;

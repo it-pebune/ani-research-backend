@@ -13,7 +13,7 @@ BEGIN
 
   SELECT  S.id, S.uuid, S.firstName, S.lastName, S.sirutaId, S.dob, S.photoUrl,
           Ut.name city, Ut.countyId, C.name county, S.created, S.updated, S.deleted,
-          S.assignedTo assignedToId, U.displayName assignedTo, S.status
+          S.assignedTo assignedToId, U.displayName assignedTo, S.status, S.hash
   FROM    [Subject] S
           LEFT JOIN
           Uat Ut ON S.sirutaId = Ut.sirutaId

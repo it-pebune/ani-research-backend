@@ -24,6 +24,10 @@ interface IUat {
   name: string;
 }
 
+interface IUatWithCounty extends Omit<IUat, 'countyId'> {
+  county: ICounty | null;
+}
+
 /**
  * User Data Access
  */
@@ -67,5 +71,21 @@ export class UatDao {
     } catch (error) {
       throw error;
     }
+  }
+
+  /**
+   * @param {number} sirutaId
+   * @return {Promise<IUatWithCounty | null>}
+   */
+  public async getUatWithCounty(sirutaId?: number): Promise<IUatWithCounty | null> {
+    if (!sirutaId) {
+      return null;
+    }
+
+    const result = (await new SqlRequest(this.sql)
+      .input('sirutaId', TYPES.Int, sirutaId)
+      .execute('getUatWithCounty'));
+
+    return { ...result.recordset[0], county: result.recordset[1] ?? null };
   }
 }

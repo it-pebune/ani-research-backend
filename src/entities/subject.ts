@@ -8,6 +8,14 @@ export enum SubjectStatus {
 }
 /* eslint-enable no-unused-vars */
 
+export interface ISubjectDTO {
+  firstName: string;
+  lastName: string;
+  photoUrl: string;
+  dob: Date;
+  sirutaId?: number;
+}
+
 export interface ISubject {
   id: number;
   uuid: string;
@@ -26,6 +34,7 @@ export interface ISubject {
   assignedToId?: number;
   assignedTo?: string;
   status?: SubjectStatus;
+  hash: string | null;
 }
 
 export interface ISubjectAssignedHistory {

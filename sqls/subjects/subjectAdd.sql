@@ -14,6 +14,7 @@ CREATE PROCEDURE [dbo].subjectAdd(
   @sirutaId   INT = 0,
   @photoUrl   VARCHAR(MAX) = '',
   @notes      VARCHAR(MAX) = '',
+  @hash       CHAR(40),
   @subjectId  INT OUTPUT
 )
 AS
@@ -22,8 +23,8 @@ BEGIN
 
   IF @sirutaId = 0 SET @sirutaId = NULL
 
-  INSERT INTO [Subject](uuid, firstName, lastName, dob, sirutaId, photoUrl, notes)
-  VALUES (@uuid, @firstName, @lastName, @dob, @sirutaId, @photoUrl, @notes)
+  INSERT INTO [Subject](uuid, firstName, lastName, dob, sirutaId, photoUrl, notes, [hash])
+  VALUES (@uuid, @firstName, @lastName, @dob, @sirutaId, @photoUrl, @notes, @hash)
 
   IF @@ERROR > 0
   BEGIN
