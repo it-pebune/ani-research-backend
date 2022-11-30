@@ -26,7 +26,7 @@ export async function markAddedSubjects(scrappedSubjects: IWSMPListResponse): Pr
   for (const scrappedSubject of scrappedSubjects.results) {
     const hash = createHash('sha1')
       .update(scrappedSubject.name.toLowerCase())
-      .update(scrappedSubject.district?.toLowerCase())
+      .update(scrappedSubject.district?.toLowerCase() ?? '')
       .digest('hex');
 
     scrappedSubject.hash = hash;
