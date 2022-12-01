@@ -8,8 +8,7 @@ BEGIN
 END
 GO
 
-CREATE PROCEDURE [dbo].getSubjectsWithHashes(@hashes VARCHAR(max))
-AS
+CREATE PROCEDURE [dbo].getSubjectsWithHashes(@hashes VARCHAR(max)) AS
 BEGIN
     SET NOCOUNT ON
 

@@ -18,6 +18,18 @@ export async function computeSubjectHash(subject: ISubjectDTO): Promise<string> 
 }
 
 /**
+ * @param {string} hash
+ * @throws {Error}
+ */
+export async function ensureSubjectWithHashNotExists(hash: string): Promise<void> {
+  const subjectDao = new SubjectDao(await app.sqlPool);
+
+  if (await subjectDao.subjectWithHashExists(hash)) {
+    throw new Error(`Subject with hash "${hash}" already exists.`);
+  }
+}
+
+/**
  * @param {IWSMPListResponse} scrappedSubjects
  */
 export async function markAddedSubjects(scrappedSubjects: IWSMPListResponse): Promise<void> {

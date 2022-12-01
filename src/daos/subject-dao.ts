@@ -182,6 +182,17 @@ export class SubjectDao {
   }
 
   /**
+   * @param {string} hash
+   * @return {Promise<boolean>}
+   */
+  public async subjectWithHashExists(hash: string): Promise<boolean> {
+    return !!(await new SqlRequest(this.sql)
+      .input('hash', sqlNVarChar(40), hash)
+      .execute('subjectWithHashExists'))
+      .recordset[0];
+  }
+
+  /**
    * @param {string[]} hashes
    * @return {Promise<{}>}
    */

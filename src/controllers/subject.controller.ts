@@ -10,7 +10,8 @@ import {
   getRequestSubject,
   userHasRole,
   UserRole,
-  computeSubjectHash
+  computeSubjectHash,
+  ensureSubjectWithHashNotExists
 } from '~shared';
 import app from '~app';
 import { SubjectDao } from '~daos';
@@ -132,6 +133,8 @@ export class SubjectController {
         created: new Date()
       };
 
+      await ensureSubjectWithHashNotExists(subject.hash);
+
       const sqlpool = await app.sqlPool;
       const dao = new SubjectDao(sqlpool);
       const result = await dao.add(subject);
@@ -210,6 +213,8 @@ export class SubjectController {
       subject.dob = params.dob;
       subject.sirutaId = params.sirutaId || 0;
       subject.hash = await computeSubjectHash(subject);
+
+      await ensureSubjectWithHashNotExists(subject.hash);
 
       const sqlpool = await app.sqlPool;
       const dao = new SubjectDao(sqlpool);
