@@ -189,7 +189,7 @@ export class SubjectDao {
     return !!(await new SqlRequest(this.sql)
       .input('hash', sqlNVarChar(40), hash)
       .execute('subjectWithHashExists'))
-      .recordset[0];
+      .returnValue;
   }
 
   /**
