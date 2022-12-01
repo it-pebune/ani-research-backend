@@ -16,7 +16,7 @@ BEGIN
 
     SELECT @count = COUNT (*)
     FROM Subject S
-    WHERE S.hash = @hash
+    WHERE S.hash = @hash AND S.deleted = 0
 
     IF @count > 0
     BEGIN
