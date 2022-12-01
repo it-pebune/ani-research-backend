@@ -15,7 +15,7 @@ BEGIN
 
     SELECT S.id, S.hash
     FROM Subject S
-    WHERE S.hash IN (@hashes)
+    WHERE S.hash IN (SELECT [hash] FROM STRING_SPLIT(@hashes, ',')) AND S.deleted = 0
 END
 GO
 
