@@ -1,6 +1,6 @@
 import { ConnectionPool, IProcedureResult, MAX, Request as SqlRequest, TYPES } from 'mssql';
 import { ISubject, ISubjectAssignedHistory, SubjectStatus } from '~entities';
-import { sqlNVarChar, sqlVarChar } from '~shared';
+import { sqlNChar, sqlNVarChar, sqlVarChar } from '~shared';
 
 interface ISubjectDTO {
   id: number;
@@ -62,7 +62,7 @@ export class SubjectDao {
         .input('photoUrl', sqlNVarChar(MAX), subject.photoUrl)
         .input('dob', TYPES.Date, subject.dob)
         .input('sirutaId', TYPES.Int, subject.sirutaId || 0)
-        .input('hash', sqlNVarChar(40), subject.hash)
+        .input('hash', sqlNChar(40), subject.hash)
         .output('subjectId', TYPES.Int);
 
       const result = await sqlReq.execute('subjectAdd');
@@ -85,7 +85,7 @@ export class SubjectDao {
         .input('photoUrl', sqlNVarChar(MAX), subject.photoUrl)
         .input('dob', TYPES.Date, subject.dob)
         .input('sirutaId', TYPES.Int, subject.sirutaId || 0)
-        .input('hash', sqlNVarChar(40), subject.hash);
+        .input('hash', sqlNChar(40), subject.hash);
 
       const result = await sqlReq.execute('subjectUpdate');
       return result;
@@ -187,7 +187,7 @@ export class SubjectDao {
    */
   public async subjectWithHashExists(hash: string): Promise<boolean> {
     return !!(await new SqlRequest(this.sql)
-      .input('hash', sqlNVarChar(40), hash)
+      .input('hash', sqlNChar(40), hash)
       .execute('subjectWithHashExists'))
       .returnValue;
   }

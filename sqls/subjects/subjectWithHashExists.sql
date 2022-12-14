@@ -8,7 +8,7 @@ BEGIN
 END
 GO
 
-CREATE PROCEDURE [dbo].subjectWithHashExists(@hash VARCHAR(40)) AS
+CREATE PROCEDURE [dbo].subjectWithHashExists(@hash CHAR(40)) AS
 BEGIN
     SET NOCOUNT ON
 
