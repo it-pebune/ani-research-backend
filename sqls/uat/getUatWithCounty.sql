@@ -12,13 +12,9 @@ CREATE PROCEDURE [dbo].getUatWithCounty(@sirutaId INT) AS
 BEGIN
     SET NOCOUNT ON
 
-    SELECT U.sirutaId, U.type, U.name
+    SELECT U.sirutaId, U.type, U.name, C.id AS countyId, C.name AS countyName
     FROM Uat U
-    WHERE U.sirutaId = @sirutaId
-
-    SELECT C.id, C.name
-    FROM County C
-    INNER JOIN dbo.Uat U on C.id = U.countyId
+    INNER JOIN dbo.County C on C.id = U.countyId
     WHERE U.sirutaId = @sirutaId
 END
 GO

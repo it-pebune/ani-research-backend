@@ -82,10 +82,16 @@ export class UatDao {
       return null;
     }
 
-    const result = (await new SqlRequest(this.sql)
+    const data = (await new SqlRequest(this.sql)
       .input('sirutaId', TYPES.Int, sirutaId)
-      .execute('getUatWithCounty'));
+      .execute('getUatWithCounty'))
+      .recordset[0];
 
-    return { ...result.recordset[0], county: result.recordsets[1][0] ?? null };
+    return {
+      sirutaId: data.sirutaId,
+      type: data.type,
+      name: data.name,
+      county: data.countyId ? { id: data.countyId, name: data.countyName } : null
+    };
   }
 }
