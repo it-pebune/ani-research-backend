@@ -1,7 +1,6 @@
 import { ConnectionPool, IProcedureResult, MAX, Request as SqlRequest, TYPES } from 'mssql';
 import { ISubject, ISubjectAssignedHistory, SubjectStatus } from '~entities';
-import { sqlNVarChar, sqlVarChar } from '~shared';
-
+import { sqlNChar, sqlNVarChar, sqlVarChar } from '~shared';
 
 interface ISubjectDTO {
   id: number;
@@ -11,6 +10,7 @@ interface ISubjectDTO {
   photoUrl: string;
   dob: Date;
   sirutaId?: number;
+  hash: string;
 }
 
 interface ISubjectAssignDTO {
@@ -62,6 +62,7 @@ export class SubjectDao {
         .input('photoUrl', sqlNVarChar(MAX), subject.photoUrl)
         .input('dob', TYPES.Date, subject.dob)
         .input('sirutaId', TYPES.Int, subject.sirutaId || 0)
+        .input('hash', sqlNChar(40), subject.hash)
         .output('subjectId', TYPES.Int);
 
       const result = await sqlReq.execute('subjectAdd');
@@ -73,9 +74,9 @@ export class SubjectDao {
 
   /**
    *
-   * @param {ISubjectDTO} subject
+   * @param {ISubject} subject
    */
-  public async update(subject: ISubjectDTO): Promise<IProcedureResult<any>> {
+  public async update(subject: ISubject): Promise<IProcedureResult<any>> {
     try {
       const sqlReq = new SqlRequest(this.sql)
         .input('id', TYPES.Int, subject.id)
@@ -83,7 +84,8 @@ export class SubjectDao {
         .input('lastName', sqlNVarChar(100), subject.lastName)
         .input('photoUrl', sqlNVarChar(MAX), subject.photoUrl)
         .input('dob', TYPES.Date, subject.dob)
-        .input('sirutaId', TYPES.Int, subject.sirutaId || 0);
+        .input('sirutaId', TYPES.Int, subject.sirutaId || 0)
+        .input('hash', sqlNChar(40), subject.hash);
 
       const result = await sqlReq.execute('subjectUpdate');
       return result;
@@ -177,5 +179,35 @@ export class SubjectDao {
     } catch (error) {
       throw error;
     }
+  }
+
+  /**
+   * @param {string} hash
+   * @return {Promise<boolean>}
+   */
+  public async subjectWithHashExists(hash: string): Promise<boolean> {
+    return !!(await new SqlRequest(this.sql)
+      .input('hash', sqlNChar(40), hash)
+      .execute('subjectWithHashExists'))
+      .returnValue;
+  }
+
+  /**
+   * @param {string[]} hashes
+   * @return {Promise<{}>}
+   */
+  public async getSubjectsWithHashes(hashes: string[]): Promise<{ [hash: string]: number }> {
+    const subjects = (await new SqlRequest(this.sql)
+      .input('hashes', sqlNVarChar(MAX), hashes.join(','))
+      .execute('getSubjectsWithHashes'))
+      .recordset;
+
+    const subjectIdsByHashes: any = {};
+
+    for (const subject of subjects) {
+      subjectIdsByHashes[subject.hash] = subject.id;
+    }
+
+    return subjectIdsByHashes;
   }
 }

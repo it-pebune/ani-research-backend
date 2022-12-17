@@ -1,26 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { v4 as uuidv4 } from 'uuid';
-import { SubjectStatus, ErrorResponse, ApiError } from '~entities';
+import { SubjectStatus, ErrorResponse, ApiError, ISubjectDTO } from '~entities';
 import {
-  logger, parseError, getRequestUser,
+  logger,
+  parseError,
+  getRequestUser,
   setRequestSubject,
   getRequestSubject,
   userHasRole,
-  UserRole
+  UserRole,
+  computeSubjectHash,
+  ensureSubjectWithHashNotExists
 } from '~shared';
 import app from '~app';
 import { SubjectDao } from '~daos';
 import Joi from 'joi';
-
-
-interface ISubjectDTO {
-  firstName: string;
-  lastName: string;
-  photoUrl: string;
-  dob: Date;
-  sirutaId?: number;
-}
 
 interface ISubjectUpdateNotesDTO {
   notes: string;
@@ -134,8 +129,11 @@ export class SubjectController {
         photoUrl: params.photoUrl,
         dob: params.dob,
         sirutaId: params.sirutaId,
+        hash: await computeSubjectHash(params),
         created: new Date()
       };
+
+      await ensureSubjectWithHashNotExists(subject.hash);
 
       const sqlpool = await app.sqlPool;
       const dao = new SubjectDao(sqlpool);
@@ -214,6 +212,9 @@ export class SubjectController {
       subject.photoUrl = params.photoUrl;
       subject.dob = params.dob;
       subject.sirutaId = params.sirutaId || 0;
+      subject.hash = await computeSubjectHash(subject);
+
+      await ensureSubjectWithHashNotExists(subject.hash);
 
       const sqlpool = await app.sqlPool;
       const dao = new SubjectDao(sqlpool);

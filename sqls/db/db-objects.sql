@@ -140,6 +140,7 @@ CREATE TABLE [dbo].[Subject](
     [photoUrl] [varchar](512) NULL,
     [notes] [varchar](max) NULL,
 	[status] [tinyint] NULL,
+	[hash] [char](40) NULL,
 	[created] [datetime2](7) NOT NULL,
 	[updated] [datetime2](7) NOT NULL,
 	[deleted] [tinyint] NOT NULL,
