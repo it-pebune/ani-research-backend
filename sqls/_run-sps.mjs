@@ -61,6 +61,14 @@ if (false) {
 
 const previouslyModifiedFiles = [
   // 'sqls/changes.sql',
+  // 'sqls/jobpositions/jobposList.sql',
+  // 'sqls/subjects/getSubjectById.sql',
+  // 'sqls/subjects/getSubjectsWithHashes.sql',
+  // 'sqls/subjects/subjectAdd.sql',
+  // 'sqls/subjects/subjectList.sql',
+  // 'sqls/subjects/subjectUpdate.sql',
+  // 'sqls/subjects/subjectWithHashExists.sql',
+  // 'sqls/uat/getUatWithCounty.sql'
   // 'sqls/documents/documentAdd.sql',
   // 'sqls/documents/documentDelete.sql',
   // 'sqls/documents/documentExists.sql',
