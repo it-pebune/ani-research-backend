@@ -12,8 +12,8 @@ CREATE PROCEDURE [dbo].jobposUpdate(
   @sirutaId       INT,
   @dateStart      DATE,
   @dateEnd        DATE,
-  @name           VARCHAR(300),
-  @info           VARCHAR(MAX)
+  @name           NVARCHAR(300),
+  @info           NVARCHAR(MAX)
 )
 AS
 BEGIN
