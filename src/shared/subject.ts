@@ -1,19 +1,17 @@
-import { SubjectDao, UatDao } from '~daos';
+import { SubjectDao } from '~daos';
 import app from '~app';
 import { createHash } from 'crypto';
 import { ISubjectDTO, IWSMPListResponse } from '~entities';
+import moment from 'moment';
 
 /**
  * @param {ISubjectDTO} subject
  * @return {Promise<string>}
  */
 export async function computeSubjectHash(subject: ISubjectDTO): Promise<string> {
-  const uatDao = new UatDao(await app.sqlPool);
-  const uat = await uatDao.getUatWithCounty(subject.sirutaId);
-
   return createHash('sha1')
     .update(subject.lastName.toLowerCase() + ' ' + subject.firstName.toLowerCase())
-    .update(uat?.county?.name.toLowerCase() ?? '')
+    .update(moment(subject.dob).format('D.MM.YYYY'))
     .digest('hex');
 }
 
@@ -38,7 +36,7 @@ export async function markAddedSubjects(scrappedSubjects: IWSMPListResponse): Pr
   for (const scrappedSubject of scrappedSubjects.results) {
     const hash = createHash('sha1')
       .update(scrappedSubject.name.toLowerCase())
-      .update(scrappedSubject.district?.toLowerCase() ?? '')
+      .update(scrappedSubject.birth)
       .digest('hex');
 
     scrappedSubject.hash = hash;
