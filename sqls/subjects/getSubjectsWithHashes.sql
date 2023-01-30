@@ -8,13 +8,14 @@ BEGIN
 END
 GO
 
-CREATE PROCEDURE [dbo].getSubjectsWithHashes(@hashes VARCHAR(max)) AS
+CREATE PROCEDURE [dbo].getSubjectsWithHashes(@hashes VARCHAR(MAX)) AS
 BEGIN
     SET NOCOUNT ON
 
-    SELECT S.id, S.hash
-    FROM Subject S
-    WHERE S.hash IN (SELECT [hash] FROM STRING_SPLIT(@hashes, ',')) AND S.deleted = 0
+    SELECT  S.id, S.hash
+    FROM    [Subject] S
+    WHERE   S.hash IN (SELECT [hash] FROM STRING_SPLIT(@hashes, ','))
+      AND   S.deleted = 0
 END
 GO
 
