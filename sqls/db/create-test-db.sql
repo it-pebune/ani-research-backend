@@ -117,7 +117,7 @@ GO
 CREATE TABLE [dbo].[Institution](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[type] [tinyint] NOT NULL,
-	[name] [varchar](200) NOT NULL,
+	[name] [nvarchar](200) NOT NULL,
 	[startDate] [date] NULL,
 	[endDate] [date] NULL,
 	[cui] [varchar](20) NULL,
@@ -138,7 +138,7 @@ CREATE TABLE [dbo].[JobPosition](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[subjectId] [int] NOT NULL,
 	[institutionId] [int] NOT NULL,
-	[name] [varchar](300) NOT NULL,
+	[name] [nvarchar](300) NOT NULL,
 	[dateStart] [date] NOT NULL,
 	[dateEnd] [date] NOT NULL,
 	[deleted] [tinyint] NOT NULL,
@@ -187,9 +187,9 @@ CREATE TABLE [dbo].[Subject](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[sirutaId] [int] NULL,
 	[assignedTo] [int] NULL,
-	[firstName] [varchar](100) NOT NULL,
-	[middleName] [varchar](50) NULL,
-	[lastName] [varchar](100) NOT NULL,
+	[firstName] [nvarchar](100) NOT NULL,
+	[middleName] [nvarchar](50) NULL,
+	[lastName] [nvarchar](100) NOT NULL,
 	[dob] [date] NULL,
 	[notes] [varchar](max) NULL,
 	[status] [tinyint] NULL,
@@ -211,7 +211,7 @@ CREATE TABLE [dbo].[Uat](
 	[sirutaId] [int] NOT NULL,
 	[countyId] [int] NOT NULL,
 	[type] [tinyint] NOT NULL,
-	[name] [varchar](100) NOT NULL,
+	[name] [nvarchar](100) NOT NULL,
  CONSTRAINT [PK_Uat] PRIMARY KEY CLUSTERED
 (
 	[sirutaId] ASC
@@ -226,9 +226,9 @@ GO
 CREATE TABLE [dbo].[User](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[email] [varchar](50) NOT NULL,
-	[firstName] [varchar](100) NOT NULL,
-	[lastName] [varchar](100) NOT NULL,
-	[displayName] [varchar](200) NOT NULL,
+	[firstName] [nvarchar](100) NOT NULL,
+	[lastName] [nvarchar](100) NOT NULL,
+	[displayName] [nvarchar](200) NOT NULL,
 	[phone] [varchar](50) NULL,
 	[created] [datetime2](7) NOT NULL,
 	[updated] [datetime2](7) NOT NULL,

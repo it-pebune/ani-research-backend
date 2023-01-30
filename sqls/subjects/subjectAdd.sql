@@ -8,8 +8,8 @@ GO
 
 CREATE PROCEDURE [dbo].subjectAdd(
   @uuid       VARCHAR(50),
-  @firstName  VARCHAR(100),
-  @lastName   VARCHAR(100),
+  @firstName  NVARCHAR(100),
+  @lastName   NVARCHAR(100),
   @dob        DATE,
   @sirutaId   INT = 0,
   @photoUrl   VARCHAR(MAX) = '',
